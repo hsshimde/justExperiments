@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{7f8ba06b-e97a-4f87-8123-a934eaae3f8a}</ProjectGuid>
+    <ProjectGuid>{07b942c8-c8b3-4283-b5b9-49dd3990b2e6}</ProjectGuid>
     <RootNamespace>RedBlackTree</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -139,13 +139,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\main.cpp" />
-    <ClCompile Include="..\redBlackTree.cpp" />
-    <ClCompile Include="..\showingFunctions.cpp" />
-    <ClCompile Include="..\useRedBlack.cpp" />
+    <ClInclude Include="redBlackTree.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\redBlackTree.h" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="redBlackTree.cpp" />
+    <ClCompile Include="showingFunctions.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -7,7 +7,9 @@
 #include <vector>
 typedef double Data;
 
-const double nil = -0.2345612;
+const float nil = -0.23f;
+
+
 class Node
 {
 private:
