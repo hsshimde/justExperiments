@@ -13,8 +13,8 @@ class Node
 private:
 	//static nodeptr NIL;
 public:
-	enum class Color{BLACK,RED};
-	Color color;
+	enum class eColor{BLACK,RED};
+	eColor color;
 public:
 	//static int nodecnt;
 	typedef Node* nodeptr;
@@ -22,7 +22,7 @@ public:
 	nodeptr left;
 	nodeptr right;
 	Data data;
-	Node(Node* pr, Data d, Color co, nodeptr l = nullptr, nodeptr r = nullptr) :parent(pr), data(d), color(co), left(l), right(r) {  }
+	Node(Node* pr, Data d, eColor co, nodeptr l = nullptr, nodeptr r = nullptr) :parent(pr), data(d), color(co), left(l), right(r) {  }
 	~Node() {}
 	const nodeptr& getParent() { return parent; }
 	const nodeptr& getParent()const { return parent; }
@@ -36,10 +36,14 @@ public:
 	nodeptr& getBrother();
 	const nodeptr& getBrother()const;
 	bool checkNode()const;
-	void swapColor(nodeptr& b) { Node::Color tmp = this->color; this->color = b->color; b->color = tmp; }
+	void swapColor(nodeptr& b);
 };
-typedef Node* nodeptr;
-typedef std::vector<nodeptr> nodevec;
+
+
+using nodeptr = Node*;
+using nodevec = std::vector<nodeptr>;
+
+
 void showNode(const nodeptr& node);
 
 class RedBlackTree
@@ -79,7 +83,7 @@ private:
 
 	void checkredblack(const nodeptr& node);
 	void checkblackcount(const nodeptr& no,nodevec& vec)const;
-	int howManyBlacks(const nodeptr& no)const;
+	size_t howManyBlacks(const nodeptr& no)const;
 	
 	//static int nodecnt;
 public:
