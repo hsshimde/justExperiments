@@ -60,13 +60,13 @@ bool Node::checkNode() const
 {
 	if (this->color == Node::eColor::RED)
 	{
-		if (this->right->color == Node::eColor::RED
-			|| this->left->color == Node::eColor::RED)
+		if (this->right->color == Node::eColor::RED || this->left->color == Node::eColor::RED)
 		{
 			return false;
 		}
 		
 	}
+
 	return true;
 
 }
