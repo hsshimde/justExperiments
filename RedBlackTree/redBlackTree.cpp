@@ -86,7 +86,7 @@ RedBlackTree::RedBlackTree()
 	redblackCnt = 0;
 	NIL = new Node(NIL,nil, Node::eColor::BLACK, NIL, NIL);
 }
-//nodeptr RedBlackTree::NIL = new Node(NIL, -1, Node::eColor::BLACK,NIL,NIL);
+
 
 void RedBlackTree::Insert(Data d)
 {
@@ -140,29 +140,41 @@ nodeptr& Node::ParentIntention()
 nodeptr& RedBlackTree::Search(nodeptr& n, Data d)
 {
 	if (n == NIL || n->data == d)
+	{
 		return n;
+	}
 
 	else if (n->data > d)
+	{
 		return Search(n->left, d);
+	}
 
 
 	else
+	{
 		return Search(n->right, d);
+	}
 
 }
 void RedBlackTree::Remove(Data d)
 {
 	nodeptr target = Search(Root, d);
 
-	if (target != NIL)--nodecnt;
-	else return;
+	if (target != NIL)
+	{
+		--nodecnt;
+	}
+	else
+	{
+		return;
+	}
 
 	 if (target == Root)
 	{
 		 if (Root->left != NIL && Root->right != NIL)
 		 {
 			 RemoveNode(target);
-		}
+		 }
 
 		else if (Root->left == NIL && Root->right == NIL)
 		{
