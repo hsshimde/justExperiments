@@ -2,6 +2,7 @@
 
 namespace greatplayer
 {
+
 	GreatPlayer::GreatPlayer()
 		:Player{}
 		,mGuts{false}
