@@ -9,6 +9,7 @@ std::ostream& operator<<(std::ostream& os, const nodeptr& n)
 	else
 	{
 		os << n->data << '[';
+
 		if (n->color == Node::eColor::RED)
 		{
 			os << "R]";
