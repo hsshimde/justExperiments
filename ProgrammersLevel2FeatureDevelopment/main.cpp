@@ -15,17 +15,21 @@ vector<int> solution(vector<int> progresses, vector<int> speeds)
     {
         size_t lastWorkIndex{ workIndex };
 
+
         for (size_t i{workIndex}; i < workSize; i++)
         {
             progresses[i] += speeds[i];
         }
+
        
         while (workIndex < workSize && progresses[workIndex] >= 100)
         {
             workIndex++;
         }
+
        
         size_t workDoneCount{ workIndex - lastWorkIndex };
+
 
 
         if (workDoneCount > 0)
@@ -34,6 +38,7 @@ vector<int> solution(vector<int> progresses, vector<int> speeds)
         }
 
         
+
     }
     return answer;
 }
