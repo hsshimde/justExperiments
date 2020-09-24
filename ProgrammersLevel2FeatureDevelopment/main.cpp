@@ -27,6 +27,7 @@ vector<int> solution(vector<int> progresses, vector<int> speeds)
        
         size_t workDoneCount{ workIndex - lastWorkIndex };
 
+
         if (workDoneCount > 0)
         {
             answer.emplace_back(workDoneCount);
