@@ -1,7 +1,8 @@
 #include <string>
 #include <vector>
-
+#include <iostream>
 using namespace std;
+
 std::vector<int> fibonacci{};
 
 int fib(int n)
@@ -14,6 +15,7 @@ int fib(int n)
     {
         return fibonacci[n] = 1;
     }
+
     else
     {
         if (fibonacci[n])
@@ -30,19 +32,11 @@ int fib(int n)
 }
 
 int solution(int n) {
+
     int answer = 0;
     fibonacci.resize(n + 1);
-
-    for (int i{}; i <= n; i++)
-    {
-        fibonacci[i] = 0;
-    }
 
     answer = fib(n);
     
     return answer;
-}
-int main()
-{
-
 }

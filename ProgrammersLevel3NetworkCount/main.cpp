@@ -3,11 +3,10 @@
 
 using namespace std;
 
-void DFS(int n, vector<vector<int>>&computers, vector<bool>& visited);
+void DFS(int n, vector<vector<int>>& computers, vector<bool>& visited);
 
 int solution(int n, vector<vector<int>> computers) {
     int answer = 0;
-
 
     vector<bool>visited(n, false);
 
@@ -16,7 +15,8 @@ int solution(int n, vector<vector<int>> computers) {
         if (visited[i] == false)
         {
             visited[i] = true;
-            answer++;
+            ++answer;
+
             DFS(i, computers, visited);
         }
     }
@@ -24,11 +24,11 @@ int solution(int n, vector<vector<int>> computers) {
     return answer;
 }
 
-void DFS(int n,vector<vector<int>>& computers ,vector<bool>& visited)
+void DFS(int n, vector<vector<int>>& computers, vector<bool>& visited)
 {
-    size_t computerNumber{ visited.size() };
+    size_t computerCount{ visited.size() };
 
-    for (size_t i{}; i < computerNumber; i++)
+    for (size_t i{}; i < computerCount; i++)
     {
         if (i != n && visited[i] == false && computers[n][i])
         {
