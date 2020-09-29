@@ -15,7 +15,7 @@ int fib(int n)
     {
         return fibonacci[n] = 1;
     }
-
+    
     else
     {
         if (fibonacci[n])
@@ -33,7 +33,8 @@ int fib(int n)
 
 int solution(int n) {
 
-    int answer = 0;
+    int answer{};
+
     fibonacci.resize(n + 1);
 
     answer = fib(n);
