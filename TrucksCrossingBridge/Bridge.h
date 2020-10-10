@@ -9,7 +9,7 @@ namespace codingpractice
 	public:
 		static Bridge* GetBridge(size_t weightCapacity, size_t bridgeLength,size_t maxTruckCount);
 		const Truck*  GetFrontTruck() const;
-		bool HandleOneMore(size_t truckWeight) const;
+		bool PossibleToHandleAnotherTruck(size_t truckWeight) const;
 		void AddTruck(Truck* truck);
 		bool RemoveTruck(size_t currentTime);
 		size_t GetCurrentTrucksWeightSum() const;
