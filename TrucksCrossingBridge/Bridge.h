@@ -13,7 +13,7 @@ namespace codingpractice
 		void AddTruck(Truck* truck);
 		bool RemoveTruck(size_t currentTime);
 		size_t GetCurrentTrucksWeightSum() const;
-		size_t GetTruckCrossedCount() const;
+		size_t GetCrossedTruckCount() const;
 
 		
 

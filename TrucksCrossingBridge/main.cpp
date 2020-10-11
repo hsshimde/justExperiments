@@ -26,7 +26,7 @@ int main()
 	{
 		br->RemoveTruck(time);
 
-		if (br->GetTruckCrossedCount() == truckCount)
+		if (br->GetCrossedTruckCount() == truckCount)
 		{
 			break;
 		}

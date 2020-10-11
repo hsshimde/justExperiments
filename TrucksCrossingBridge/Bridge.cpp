@@ -22,12 +22,12 @@ namespace codingpractice
 	Truck** mTrucksOnTheBridge;*/
 
 
-	Bridge::Bridge(size_t weightCapacity, size_t bridgeLength,size_t maxTruckCount)
-		: mMaxTruckCount{maxTruckCount}
-		, mWeightCapacity{weightCapacity}
-		, mBridgeLength{bridgeLength}
+	Bridge::Bridge(size_t weightCapacity, size_t bridgeLength, size_t maxTruckCount)
+		: mMaxTruckCount{ maxTruckCount }
+		, mWeightCapacity{ weightCapacity }
+		, mBridgeLength{ bridgeLength }
 		, mCurrentFrontTruckIndex{ 0 }
-		, mTrucksCount{0}
+		, mTrucksCount{ 0 }
 	{
 		mTrucksOnTheBridge = new Truck * [maxTruckCount];
 	}
@@ -40,7 +40,7 @@ namespace codingpractice
 		}
 
 		delete[] mTrucksOnTheBridge;
-		
+
 	}
 
 	const Truck* Bridge::GetFrontTruck() const
@@ -48,13 +48,13 @@ namespace codingpractice
 		return mTrucksOnTheBridge[mCurrentFrontTruckIndex];
 	}
 
-	bool Bridge::HandleOneMore(size_t truckWeight) const
+	bool Bridge::PossibleToHandleAnotherTruck(size_t truckWeight) const
 	{
 		if (GetCurrentTrucksWeightSum() + truckWeight <= mWeightCapacity)
 		{
 			return true;
 		}
-		
+
 		else
 		{
 			return false;
@@ -68,7 +68,7 @@ namespace codingpractice
 
 	bool Bridge::RemoveTruck(size_t currentTime)
 	{
-		if (mTrucksCount == 0 || mTrucksCount==mCurrentFrontTruckIndex)
+		if (mTrucksCount == 0 || mTrucksCount == mCurrentFrontTruckIndex)
 		{
 			return false;
 		}
@@ -88,7 +88,7 @@ namespace codingpractice
 	size_t Bridge::GetCurrentTrucksWeightSum() const
 	{
 		size_t totalWeight{};
-		
+
 		for (size_t i{ mCurrentFrontTruckIndex }; i < mTrucksCount; ++i)
 		{
 			totalWeight += mTrucksOnTheBridge[i]->GetWeight();
@@ -97,10 +97,10 @@ namespace codingpractice
 		return totalWeight;
 	}
 
-	size_t Bridge::GetTruckCrossedCount() const
+
+	size_t Bridge::GetCrossedTruckCount() const
 	{
 		return mCurrentFrontTruckIndex;
 	}
-
 
 }
