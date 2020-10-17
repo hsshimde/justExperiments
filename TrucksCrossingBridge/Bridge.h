@@ -7,13 +7,15 @@ namespace codingpractice
 	class Bridge
 	{
 	public:
-		static Bridge* GetBridge(size_t weightCapacity, size_t bridgeLength,size_t maxTruckCount);
+		static Bridge* GetBridge(const size_t weightCapacity, const size_t bridgeLength, const size_t maxTruckCount);
 		const Truck*  GetFrontTruck() const;
 		bool PossibleToHandleAnotherTruck(size_t truckWeight) const;
 		void AddTruck(Truck* truck);
-		bool RemoveTruck(size_t currentTime);
+		bool RemoveTruck(const size_t currentTime);
 		size_t GetCurrentTrucksWeightSum() const;
 		size_t GetCrossedTruckCount() const;
+	
+		
 
 		
 

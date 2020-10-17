@@ -21,7 +21,9 @@ int main()
 	size_t truckCount{ truck_weights.size() };
 	Bridge* br = Bridge::GetBridge(static_cast<size_t>(weight), static_cast<size_t>(bridge_length), truckCount);
 	size_t time{ 1 };
+	
 
+	
 	while (true)
 	{
 		br->RemoveTruck(time);
@@ -44,7 +46,7 @@ int main()
 	}
 
 	answer = static_cast<int>(time);
-
+	
 	std::cout << answer << std::endl;
 	return answer;
 

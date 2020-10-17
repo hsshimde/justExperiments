@@ -10,7 +10,8 @@ namespace codingpractice
 	public:
 		Truck(size_t weight, size_t startTime);
 		Truck(const Truck& rhs);
-		//~Truck();
+		virtual ~Truck();
+
 
 		size_t GetWeight() const;
 		size_t GetTime() const;

@@ -12,7 +12,7 @@ int main()
 
 	for (int i{ }; i < Size; i++)
 	{
-		arr[i] = Size - i;
+		arr[i] = 80 - i;
 	}
 
 	mergeSort(arr, 0, Size - 1);
@@ -74,6 +74,7 @@ void mergeSort(Data myArray[], int begin, int end)
 void bubbleSort(Data myArray[], int begin, int end)
 {
 	int size{ end - begin + 1 };
+	int temp{};
 
 	for (int i{}; i < size; ++i)
 	{
@@ -81,7 +82,7 @@ void bubbleSort(Data myArray[], int begin, int end)
 		{
 			if (myArray[j - 1] > myArray[j])
 			{
-				int temp{ myArray[j] };
+				temp = myArray[j];
 				myArray[j] = myArray[j - 1];
 				myArray[j - 1] = temp;
 			}
