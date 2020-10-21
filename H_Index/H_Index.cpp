@@ -3,22 +3,29 @@
 
 using namespace std;
 
+int solution(vector<int> citations);
+
+int main()
+{
+
+}
+
 int solution(vector<int> citations) {
 
 	int answer = 0;
-	int highestPossibleIndex{ static_cast<int>(citations.size()) };
-	for (; highestPossibleIndex > 0; highestPossibleIndex--)
+	for (int highestPossibleIndex{ static_cast<int>(citations.size()) }; highestPossibleIndex > 0; highestPossibleIndex--)
 	{
-		int IndexCount{};
+		int indexCount{};
+
 		for (size_t i{}; i < citations.size(); i++)
 		{
 			if (citations[i] >= highestPossibleIndex)
 			{
-				IndexCount++;
+				indexCount++;
 			}
 		}
 
-		if (IndexCount >= highestPossibleIndex)
+		if (indexCount >= highestPossibleIndex)
 		{
 			break;
 		}
@@ -31,9 +38,4 @@ int solution(vector<int> citations) {
 	answer = highestPossibleIndex;
 
 	return answer;
-}
-
-int main()
-{
-
 }
