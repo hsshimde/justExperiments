@@ -10,7 +10,7 @@ namespace assignment2
 
 	UBoat& UBoat::operator=(const UBoat& rhs)
 	{
-		
+		Vehicle::oper
 	}
 
 
