@@ -9,6 +9,13 @@ namespace assignment2
 
 	}
 
+	Person::Person(const Person& rhs)
+		: mName{ rhs.mName }
+		, mWeight{ rhs.mWeight }
+	{
+
+	}
+
 	Person::~Person()
 	{
 

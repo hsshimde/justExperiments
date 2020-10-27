@@ -8,7 +8,9 @@ namespace assignment2
 	{
 	public:
 		Vehicle(unsigned int maxPassengersCount);
+		Vehicle(const Vehicle& rhs);
 		virtual ~Vehicle();
+		Vehicle& operator=(const Vehicle& rhs);
 
 		virtual unsigned int GetMaxSpeed() const = 0;
 

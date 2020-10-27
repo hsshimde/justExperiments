@@ -8,6 +8,8 @@ namespace assignment2
 	{
 	public:
 		UBoat();
+		UBoat(const UBoat& rsh);
+		UBoat& operator=(const UBoat& rhs);
 		~UBoat();
 	};
 }

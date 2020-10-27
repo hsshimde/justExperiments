@@ -13,9 +13,24 @@ namespace assignment2
 
 	}
 
+	Vehicle::Vehicle(const Vehicle& rhs)
+		: mMaxPassengersCount{rhs.mMaxPassengersCount}
+		, mCurrentPassengersCount{rhs.mCurrentPassengersCount}
+		, mTravelCount{ rhs.mTravelCount }
+		, mTravelledDistance{ rhs.mTravelledDistance }
+	{
+		for (size_t i{}; i < mCurrentPassengersCount; ++i)
+		{
+			mPeopleOnTheVehicle[i] = new Person{ *rhs.mPeopleOnTheVehicle[i] };
+		}
+	}
+
 	Vehicle::~Vehicle()
 	{
-
+		for (size_t i{}; i < mCurrentPassengersCount; ++i)
+		{
+			delete mPeopleOnTheVehicle[i];
+		}
 	}
 
 	bool Vehicle::AddPassenger(const Person* person)
