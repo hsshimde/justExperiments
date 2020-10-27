@@ -24,6 +24,7 @@ namespace assignment2
 
 	Boat::~Boat()
 	{
+
 	}
 
 	Boatplane Boat::operator+(Airplane& plane)

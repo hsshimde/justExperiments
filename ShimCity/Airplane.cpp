@@ -44,9 +44,9 @@ namespace assignment2
 		{
 			bp.AddPassenger(boat.GetPassenger(i));
 		}
-		
+
 		MakeVehicleEmpty();
-		
+		boat.MakeVehicleEmpty();
 
 		return bp;
 	}

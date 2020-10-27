@@ -22,12 +22,11 @@ namespace assignment2
 		size_t GetTravelledDistance() const;
 		size_t GetTravelCount() const;
 		void Travel();
-
+		void MakeVehicleEmpty();
 		virtual bool GoOnTravel() = 0;
 
 
 	protected:
-		void MakeVehicleEmpty();
 		void IncreaseTravelCount();
 
 	private:

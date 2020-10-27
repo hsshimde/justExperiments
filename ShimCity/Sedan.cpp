@@ -68,6 +68,7 @@ namespace assignment2
 		{
 			mbConnected = true;
 			mConnectedTrailer = trailer;
+			return true;
 		}
 	}
 
@@ -82,6 +83,7 @@ namespace assignment2
 		{
 			delete mConnectedTrailer;
 			mbConnected = false;
+			return true;
 		}
 	}
 
