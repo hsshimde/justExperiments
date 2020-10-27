@@ -16,6 +16,16 @@ namespace assignment2
 
 	}
 
+	Person& Person::operator=(const Person& rhs)
+	{
+		if (rhs != *this)
+		{
+			mName = rhs.mName;
+			mWeight = rhs.mWeight;
+		}
+		return *this;
+	}
+
 	Person::~Person()
 	{
 
@@ -29,5 +39,15 @@ namespace assignment2
 	unsigned int Person::GetWeight() const
 	{
 		return mWeight;
+	}
+
+	bool Person::operator==(const Person& rhs) const
+	{
+		return mName == rhs.mName && mWeight == rhs.mWeight;
+	}
+
+	bool Person::operator!=(const Person& rhs) const
+	{
+		return !(rhs == *this);
 	}
 }

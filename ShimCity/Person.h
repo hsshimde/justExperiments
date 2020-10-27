@@ -9,7 +9,11 @@ namespace assignment2
 	public:
 		Person(const char* name, unsigned int weight);
 		Person(const Person& rhs);
-		~Person();
+		Person& operator=(const Person& rhs);
+		virtual ~Person();
+
+		bool operator==(const Person& rhs) const;
+		bool operator!=(const Person& rhs) const;
 
 		const std::string& GetName() const;
 		unsigned int GetWeight() const;

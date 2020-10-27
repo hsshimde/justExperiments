@@ -158,6 +158,7 @@
     <ClCompile Include="Airplane.cpp" />
     <ClCompile Include="Boat.cpp" />
     <ClCompile Include="Boatplane.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Motorcycle.cpp" />
     <ClCompile Include="Person.cpp" />
     <ClCompile Include="Sedan.cpp" />

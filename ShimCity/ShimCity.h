@@ -13,6 +13,7 @@ namespace assignment2
 		bool RemoveVehicle(unsigned int i);
 		const Vehicle* GetFurthestTravelled() const;
 
+
 	private:
 		ShimCity();
 		~ShimCity();

@@ -6,7 +6,6 @@ namespace assignment2
 	{
 	public:
 		virtual unsigned int GetDriveSpeed() const = 0;
-		size_t GetMaxSpeed() const;
 		
 	};
 }

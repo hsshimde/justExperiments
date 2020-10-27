@@ -33,6 +33,29 @@ namespace assignment2
 		}
 	}
 
+	Vehicle& Vehicle::operator=(const Vehicle& rhs)
+	{
+		if (this != &rhs)
+		{
+			for (size_t i{}; i < mCurrentPassengersCount; ++i)
+			{
+				delete mPeopleOnTheVehicle[i];
+			}
+
+			mMaxPassengersCount = rhs.mMaxPassengersCount;
+			mCurrentPassengersCount = rhs.mCurrentPassengersCount;
+			mTravelCount = rhs.mTravelCount;
+			mTravelledDistance = rhs.mTravelledDistance;
+
+			for (size_t i{}; i < mCurrentPassengersCount; ++i)
+			{
+				mPeopleOnTheVehicle[i] = new Person{ *rhs.mPeopleOnTheVehicle[i] };
+			}
+		}
+
+		return *this;
+	}
+
 	bool Vehicle::AddPassenger(const Person* person)
 	{
 		assert(person != nullptr);
@@ -120,5 +143,10 @@ namespace assignment2
 	void Vehicle::IncreaseTravelCount()
 	{
 		mTravelCount++;
+	}
+
+	void Vehicle::Travel()
+	{
+		mTravelledDistance += GetMaxSpeed();
 	}
 }

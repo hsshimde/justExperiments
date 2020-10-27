@@ -29,7 +29,10 @@ namespace assignment2
 	{
 		for (size_t i{}; i < mCurrentVehicleCount; ++i)
 		{
-			mVehicleOnTheCity[i]->GoOnTravel();
+			if (mVehicleOnTheCity[i]->GoOnTravel())
+			{
+				mVehicleOnTheCity[i]->Travel();
+			}
 		}
 	}
 

@@ -8,6 +8,8 @@ namespace assignment2
 	{
 	public:
 		Motorcycle();
+		Motorcycle(const Motorcycle& rhs);
+		Motorcycle& operator=(const Motorcycle& rhs);
 		virtual ~Motorcycle();
 
 		size_t GetMaxSpeed() const;

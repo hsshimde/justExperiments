@@ -10,6 +10,11 @@ namespace assignment2
 		UBoat();
 		UBoat(const UBoat& rsh);
 		UBoat& operator=(const UBoat& rhs);
-		~UBoat();
+		virtual ~UBoat();
+
+		size_t GetMaxSpeed() const;
+		size_t GetSailSpeed() const;
+		size_t GetDiveSpeed() const;
+		bool GoOnTravel();
 	};
 }

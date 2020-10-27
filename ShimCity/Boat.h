@@ -12,7 +12,9 @@ namespace assignment2
 	{
 	public:
 		Boat(unsigned int maxPassengersCount);
-		~Boat();
+		Boat(const Boat& rhs);
+		Boat& operator=(const Boat& rhs);
+		virtual ~Boat();
 
 		Boatplane operator+(Airplane& plane);
 		virtual size_t GetMaxSpeed() const;

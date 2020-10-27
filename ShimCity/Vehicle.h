@@ -21,10 +21,14 @@ namespace assignment2
 		unsigned int GetMaxPassengersCount() const;
 		size_t GetTravelledDistance() const;
 		size_t GetTravelCount() const;
-		void MakeVehicleEmpty();
-		void IncreaseTravelCount();
+		void Travel();
+
 		virtual bool GoOnTravel() = 0;
 
+
+	protected:
+		void MakeVehicleEmpty();
+		void IncreaseTravelCount();
 
 	private:
 		static constexpr size_t MAX_COUNT{ 100 };

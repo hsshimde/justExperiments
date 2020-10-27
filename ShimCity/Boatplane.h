@@ -9,7 +9,9 @@ namespace assignment2
 	{
 	public:
 		Boatplane(unsigned int maxPassengersCount);
-		~Boatplane();
+		Boatplane(const Boatplane& rhs);
+		Boatplane& operator=(const Boatplane& rhs);
+		virtual ~Boatplane();
 
 		virtual size_t GetMaxSpeed() const;
 		virtual size_t GetFlySpeed() const;

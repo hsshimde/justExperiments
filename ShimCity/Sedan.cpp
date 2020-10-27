@@ -1,3 +1,4 @@
+#include <cassert>
 #include "Sedan.h"
 
 namespace assignment2
@@ -22,6 +23,31 @@ namespace assignment2
 
 	}
 
+	Sedan& Sedan::operator=(const Sedan& rhs)
+	{
+		Vehicle::operator=(rhs);
+		if (rhs.mbConnected)
+		{
+			if (mbConnected)
+			{
+				delete mConnectedTrailer;
+			}
+
+			mConnectedTrailer = new Trailer{ rhs.mConnectedTrailer->GetWeight() };
+		}
+
+		else
+		{
+			if (mbConnected)
+			{
+				delete mConnectedTrailer;
+				mbConnected = false;
+			}
+		}
+
+		return *this;
+	}
+
 	Sedan::~Sedan()
 	{
 		if (mbConnected)
@@ -32,6 +58,8 @@ namespace assignment2
 
 	bool Sedan::AddTrailer(const Trailer* trailer)
 	{
+		assert(trailer != nullptr);
+
 		if (mbConnected)
 		{
 			return false;
@@ -52,9 +80,56 @@ namespace assignment2
 
 		else
 		{
-			mbConnected = false;
 			delete mConnectedTrailer;
+			mbConnected = false;
 		}
+	}
+
+	size_t Sedan::GetMaxSpeed() const
+	{
+		return GetDriveSpeed();
+	}
+
+	size_t Sedan::GetDriveSpeed() const
+	{
+		size_t passengersCount{ GetPassengersCount() };
+		size_t totalWeight{};
+
+		for (size_t i{}; i < passengersCount; ++i)
+		{
+			totalWeight += GetPassenger(i)->GetWeight();
+		}
+
+		if (mbConnected)
+		{
+			totalWeight += mConnectedTrailer->GetWeight();
+		}
+
+		if (totalWeight <= 80)
+		{
+			return 480;
+		}
+
+		else if (totalWeight > 80 && totalWeight <= 160)
+		{
+			return 458;
+		}
+
+		else if (totalWeight > 160 && totalWeight <= 260)
+		{
+			return 400;
+		}
+
+		else if (totalWeight > 260 && totalWeight <= 350)
+		{
+			return 380;
+		}
+
+		else
+		{
+			return 300;
+		}
+
 	}
 
 	bool Sedan::GoOnTravel()
