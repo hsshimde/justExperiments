@@ -22,12 +22,12 @@ namespace course
 
 	}
 
-	const std::string& Student::GetName() const
+	const std::string& Student::GetStudentName() const
 	{
 		return mName;
 	}
 
-	size_t Student::GetNumber() const
+	size_t Student::GetStudentNumber() const
 	{
 		return mStudentNumber;
 	}

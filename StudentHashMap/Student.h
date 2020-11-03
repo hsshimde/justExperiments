@@ -13,8 +13,8 @@ namespace course
 		bool operator<(const Student& rhs) const;
 		bool operator==(const Student& rhs) const;
 		
-		size_t GetNumber() const;
-		const std::string& GetName() const;
+		size_t GetStudentNumber() const;
+		const std::string& GetStudentName() const;
 		friend std::ostream& operator<<(std::ostream& os, const Student& student);
 
 	private:
