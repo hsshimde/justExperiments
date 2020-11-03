@@ -8,7 +8,7 @@ namespace course
 	{
 	public:
 		Student();
-		Student(std::string& name, size_t studentNumber);
+		Student(const char* name, size_t studentNumber);
 		virtual ~Student();
 		bool operator<(const Student& rhs) const;
 		bool operator==(const Student& rhs) const;

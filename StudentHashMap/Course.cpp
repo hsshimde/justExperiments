@@ -133,6 +133,9 @@ namespace course
 
 	std::ostream& operator<<(std::ostream& os, const Course& course)
 	{
+			
+		os << course.mCourseName << ", " << course.mCourseNumber << std::endl;
+
 		for (size_t i{}; i < course.mStudentCount; ++i)
 		{
 			os << *course.mStudentPointerArray[course.hash(course.mStudentNumberArray[i])] << std::endl;

@@ -10,7 +10,7 @@ namespace course
 
 	}
 
-	Student::Student(std::string& name, size_t student)
+	Student::Student(const char* name, size_t student)
 		: mName{ name }
 		, mStudentNumber{ student }
 	{
