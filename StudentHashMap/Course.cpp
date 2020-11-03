@@ -51,14 +51,95 @@ namespace course
 
 	bool Course::AddStudent(const Student* student)
 	{
-		
+		assert(student != nullptr);
+
 		if (mStudentCount >= mMaxStudentCount)
 		{
 			delete student;
 			return false;
 		}
+
+		else
+		{
+			mStudentNumberArray[mStudentCount] = student->GetStudentNumber();
+			mStudentPointerArray[hash(student->GetStudentNumber())] = student;
+			mStudentCount++;
+			return true;
+		}
+
 	}
 
+	bool Course::RemoveStudent(size_t studentNumber)
+	{
+		if (studentNumber >= mStudentCount)
+		{
+			return false;
+		}
+
+		else
+		{
+			bool bFoundStudent{ false };
+
+			size_t i{};
+			for (; i < mStudentCount; ++i)
+			{
+				if (mStudentNumberArray[i] == studentNumber)
+				{
+					bFoundStudent = true;
+					break;
+				}
+			}
+
+			if (!bFoundStudent)
+			{
+				return false;
+			}
+
+			else
+			{
+				delete mStudentPointerArray[hash(mStudentNumberArray[i])];
+
+				if (i != MAX_COUNT)
+				{
+					for (size_t j{ i + 1 }; j < mMaxStudentCount; ++j)
+					{
+						mStudentNumberArray[j - 1] = mStudentNumberArray[j];
+					}
+				}
+
+				mStudentCount--;
+				return true;
+			}
+
+
+		}
+	}
+
+
+	size_t Course::GetStudentCount() const
+	{
+		return mStudentCount;
+	}
+
+	const Student* Course::GetStudent(size_t studentNumber) const
+	{
+		return mStudentPointerArray[hash(studentNumber)];
+	}
+
+	size_t Course::hash(size_t studentNumber) const
+	{
+		return studentNumber % HashNumber;
+	}
+
+	std::ostream& operator<<(std::ostream& os, const Course& course)
+	{
+		for (size_t i{}; i < course.mStudentCount; ++i)
+		{
+			os << *course.mStudentPointerArray[course.hash(course.mStudentNumberArray[i])] << std::endl;
+		}
+
+		return os;
+	}
 
 
 }
