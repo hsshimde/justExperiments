@@ -47,4 +47,6 @@ namespace course
 	{
 		return mStudentNumber == rhs.mStudentNumber;
 	}
+
+
 }
