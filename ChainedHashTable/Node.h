@@ -3,7 +3,7 @@
 
 namespace node
 {
-	typedef size_t Data;
+	typedef double Data;
 	
 	class Node
 	{

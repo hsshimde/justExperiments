@@ -6,8 +6,10 @@ namespace chainedhash
 
 
 	ChainedHashTable::ChainedHashTable(size_t tableSize)
+		: mTableSize{tableSize}
+		, mElementCount{0}
 	{
-		mTableSize = tableSize;
+		
 		mTable = new Node * [mTableSize];
 
 		for (size_t i{}; i < mTableSize; ++i)
@@ -18,6 +20,7 @@ namespace chainedhash
 
 	ChainedHashTable::ChainedHashTable(const ChainedHashTable& rhs)
 		: mTableSize{ rhs.mTableSize }
+		, mElementCount{rhs.mElementCount}
 	{
 		mTable = new Node * [mTableSize];
 
@@ -90,7 +93,9 @@ namespace chainedhash
 
 	size_t ChainedHashTable::getHashValue(const Data& data) const
 	{
-		return static_cast<size_t>(data % mTableSize);
+		size_t integerData{ static_cast<size_t>(data) };
+
+		return integerData % mTableSize;
 	}
 
 	bool ChainedHashTable::AddData(const Data data)
@@ -120,6 +125,7 @@ namespace chainedhash
 			mTable[hashValue] = new Node{ data };
 		}
 
+		mElementCount++;
 		return true;
 	}
 
@@ -138,6 +144,7 @@ namespace chainedhash
 				*formerHead = temp->GetNext();
 				temp->GetNext() = nullptr;
 				delete temp;
+				mElementCount--;
 				return true;
 			}
 
@@ -160,6 +167,7 @@ namespace chainedhash
 					deleteTarget->GetNext() = nullptr;
 					delete deleteTarget;
 
+					mElementCount--;
 					return true;
 				}
 			
@@ -172,5 +180,10 @@ namespace chainedhash
 		{
 			return false;
 		}
+	}
+
+	size_t ChainedHashTable::GetElementCount() const
+	{
+		return mElementCount;
 	}
 }
