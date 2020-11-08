@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace chainedhash
+namespace node
 {
 	typedef size_t Data;
 	
@@ -13,30 +13,14 @@ namespace chainedhash
 		Node& operator=(const Node& rhs) = delete;
 		~Node();
 
+		Node* GetNext() const;
+		Node*& GetNext();
+		const Data GetData() const;
+
 
 	private:
 		Node* mNext;
 		Data mData;
 
 	};
-}
-
-namespace chainedhash
-{
-	
-	Node::Node(const Data data)
-		: mNext{ nullptr }
-		, mData{ data }
-	{
-
-	}
-
-	Node::~Node()
-	{
-		if (mNext != nullptr)
-		{
-			delete mNext;
-		}
-	}
-
 }
