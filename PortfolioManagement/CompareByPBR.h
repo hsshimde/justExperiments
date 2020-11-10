@@ -10,11 +10,8 @@ namespace compare
 	{
 
 	public:
-		CompareByPBR(size_t timeLength);
 		bool operator()(const IndividualStock* lhs, const IndividualStock* rhs);
 
 
-	private:
-		size_t mTimeLength;
 	};
 }

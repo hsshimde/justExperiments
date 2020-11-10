@@ -7,6 +7,7 @@
 #include "CompareByPBR.h"
 #include "CompareByPCR.h"
 #include "CompareByPOR.h"
+#include "CompareByWeight.h"
 
 
 namespace portfolio
@@ -157,7 +158,7 @@ namespace portfolio
 	}
 
 
-	StockPointerVector Portfolio::SortByMarketCap(size_t timeLength) const
+	StockPointerVector Portfolio::SortByMarketCap() const
 	{
 		StockPointerVector sortedVector{};
 
@@ -166,14 +167,93 @@ namespace portfolio
 			sortedVector.push_back(mStockArray[i]);
 		}
 		
-		std::sort(begin(sortedVector), end(sortedVector), compare::CompareByMarketCap(timeLength));
+		std::sort(begin(sortedVector), end(sortedVector), compare::CompareByMarketCap());
 
 		return sortedVector;
 	}
 
-	StockPointerVector Portfolio::SortByPBR(size_t timeLength) const
+	StockPointerVector Portfolio::SortByPBR() const
 	{
+		StockPointerVector sortedVector{};
 
+		for (size_t i{}; i < mPortfolioSize; ++i)
+		{
+			sortedVector.push_back(mStockArray[i]);
+		}
+
+		std::sort(begin(sortedVector), end(sortedVector), compare::CompareByPBR());
+
+		return sortedVector;
+	}
+
+	StockPointerVector Portfolio::SortByPCR() const
+	{
+		StockPointerVector sortedVector{};
+
+		for (size_t i{}; i < mPortfolioSize; ++i)
+		{
+			sortedVector.push_back(mStockArray[i]);
+		}
+
+		std::sort(begin(sortedVector), end(sortedVector), compare::CompareByPCR());
+
+		return sortedVector;
+	}
+	
+	StockPointerVector Portfolio::SortByPOR() const
+	{
+		StockPointerVector sortedVector{};
+
+		for (size_t i{}; i < mPortfolioSize; ++i)
+		{
+			sortedVector.push_back(mStockArray[i]);
+		}
+
+		std::sort(begin(sortedVector), end(sortedVector), compare::CompareByPOR());
+
+		return sortedVector;
+	}
+
+	StockPointerVector Portfolio::SortByWeight() const
+	{
+		StockPointerVector sortedVector{};
+
+		for (size_t i{}; i < mPortfolioSize; ++i)
+		{
+			sortedVector.push_back(mStockArray[i]);
+		}
+
+		std::sort(begin(sortedVector), end(sortedVector), compare::CompareByWeight());
+		
+		return sortedVector;
+	}
+
+	StockPointerVector Portfolio::SortByArithmeticMean(size_t timeLength) const
+	{
+		StockPointerVector sortedVector{};
+
+		for (size_t i{}; i < mPortfolioSize; ++i)
+		{
+			sortedVector.push_back(mStockArray[i]);
+		}
+
+		std::sort(begin(sortedVector), end(sortedVector), compare::CompareByAriMean(timeLength));
+
+		return sortedVector;
+	}
+
+	StockPointerVector Portfolio::SortByGeometricMean(size_t timeLength) const
+	{
+		StockPointerVector sortedVector{};
+
+		for (size_t i{}; i < mPortfolioSize; ++i)
+		{
+			sortedVector.push_back(mStockArray[i]);
+		}
+
+		std::sort(begin(sortedVector), end(sortedVector), compare::CompareByGeoMean(timeLength));
+
+		return sortedVector;
 	}
 
 	

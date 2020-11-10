@@ -17,15 +17,20 @@ namespace company
 		void AddRecentGrothRate(float recentGrowthRate);
 		
 		size_t GetCompanyKey() const;
-		const double& GetMarketValue() const;
+		const double& GetMarketCap() const;
 		const double& GetSales() const;
 		const double& GetOperatingProfit() const;
 		const double& GetNetProfit() const;
 		const double& GetValuePerShare() const;
+		
+		float GetArithmeticMean(size_t timeLength) const;
+		float GetGeometricMean(size_t timeLength) const;
+
+		
 
 	private:
 		size_t mCompanyKey;
-		double mMarketValue;
+		double mMarketCap;
 		double mValuePerShare;
 		double mSales;
 		double mOperatingProfit;

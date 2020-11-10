@@ -139,8 +139,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CompanyFinancialInfo.h" />
+    <ClInclude Include="Company.h" />
+    <ClInclude Include="CompareByArithmeticMean.h" />
+    <ClInclude Include="CompareByGeometricMean.h" />
+    <ClInclude Include="CompareByPBR.h" />
+    <ClInclude Include="CompareByPCR.h" />
+    <ClInclude Include="CompareByPOR.h" />
+    <ClInclude Include="CompareByMarketCap.h" />
     <ClInclude Include="Portfolio.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Company.cpp" />
+    <ClCompile Include="Portfolio.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

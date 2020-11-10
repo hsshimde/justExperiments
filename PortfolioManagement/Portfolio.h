@@ -27,13 +27,14 @@ namespace portfolio
 		Portfolio(const Portfolio& rhs);
 		Portfolio& operator=(const Portfolio& rhs);
 		
-		StockPointerVector SortByMarketCap(size_t timeLength) const;
-		StockPointerVector SortByPBR(size_t timeLength) const;
-		StockPointerVector SortByPCR(size_t timeLength) const;
-		StockPointerVector SortByPOR(size_t timeLength) const;
+		StockPointerVector SortByMarketCap() const;
+		StockPointerVector SortByPBR() const;
+		StockPointerVector SortByPCR() const;
+		StockPointerVector SortByPOR() const;
+		StockPointerVector SortByWeight() const;
 		StockPointerVector SortByGeometricMean(size_t timeLength) const;
 		StockPointerVector SortByArithmeticMean(size_t timeLength) const;
-		StockPointerVector SortByWeight(size_t timeLength) const;
+		
 
 
 		bool BuyStock(IndividualStock* indivStock);
