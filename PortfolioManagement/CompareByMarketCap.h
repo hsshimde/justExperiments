@@ -6,10 +6,14 @@ namespace compare
 	
 	using namespace portfolio;
 
-	class CompareByShare
+	class CompareByMarketCap
 	{
 
 	public:
+		CompareByMarketCap(size_t timeLength);
 		bool operator()(const IndividualStock* lhs, const IndividualStock* rhs);
+
+	private:
+		size_t mTimeLength;
 	};
 }

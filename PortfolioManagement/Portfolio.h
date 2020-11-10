@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <cassert>
 
-#include "CompanyFinancialInfo.h"
+#include "Company.h"
 
 constexpr static size_t MAX_PORTFOLIO_SIZE{ 100 };
 
@@ -12,7 +12,7 @@ namespace portfolio
 {
 	using namespace company;
 	typedef std::pair<Company, size_t> IndividualStock;
-	typedef std::vector<IndividualStock*> StockVector;
+	typedef std::vector<IndividualStock*> StockPointerVector;
 	typedef std::unordered_map<size_t, size_t> StockHashMapForIndex;
 
 
@@ -27,14 +27,13 @@ namespace portfolio
 		Portfolio(const Portfolio& rhs);
 		Portfolio& operator=(const Portfolio& rhs);
 		
-		StockVector SortByShare() const;
-		StockVector SortByPBR() const;
-		StockVector SortByPCR() const;
-		StockVector SortByPOR() const;
-		
-		StockVector SortByGeometricMean() const;
-		StockVector SortByArithmeticMean() const;
-		StockVector SortByWeight() const;
+		StockPointerVector SortByMarketCap(size_t timeLength) const;
+		StockPointerVector SortByPBR(size_t timeLength) const;
+		StockPointerVector SortByPCR(size_t timeLength) const;
+		StockPointerVector SortByPOR(size_t timeLength) const;
+		StockPointerVector SortByGeometricMean(size_t timeLength) const;
+		StockPointerVector SortByArithmeticMean(size_t timeLength) const;
+		StockPointerVector SortByWeight(size_t timeLength) const;
 
 
 		bool BuyStock(IndividualStock* indivStock);

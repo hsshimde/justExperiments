@@ -1,6 +1,12 @@
 #include <algorithm>
 
 #include "Portfolio.h"
+#include "CompareByArithmeticMean.h"
+#include "CompareByGeometricMean.h"
+#include "CompareByMarketCap.h"
+#include "CompareByPBR.h"
+#include "CompareByPCR.h"
+#include "CompareByPOR.h"
 
 
 namespace portfolio
@@ -150,6 +156,25 @@ namespace portfolio
 		}
 	}
 
+
+	StockPointerVector Portfolio::SortByMarketCap(size_t timeLength) const
+	{
+		StockPointerVector sortedVector{};
+
+		for (size_t i{}; i < mPortfolioSize; ++i)
+		{
+			sortedVector.push_back(mStockArray[i]);
+		}
+		
+		std::sort(begin(sortedVector), end(sortedVector), compare::CompareByMarketCap(timeLength));
+
+		return sortedVector;
+	}
+
+	StockPointerVector Portfolio::SortByPBR(size_t timeLength) const
+	{
+
+	}
 
 	
 
