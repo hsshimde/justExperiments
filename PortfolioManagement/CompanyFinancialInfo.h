@@ -2,6 +2,8 @@
 #include <string>
 namespace company
 {
+	
+
 	class Company
 	{
 	public:
@@ -18,6 +20,7 @@ namespace company
 		double GetSales() const;
 		double GetOperatingProfit() const;
 		double GetNetProfit() const;
+		double GetValuePerShare() const;
 
 
 
@@ -25,6 +28,7 @@ namespace company
 	private:
 		size_t mCompanyKey;
 		double mMarketValue;
+		double mValuePerShare;
 		double mSales;
 		double mOperatingProfit;
 		double mNetProfit;
