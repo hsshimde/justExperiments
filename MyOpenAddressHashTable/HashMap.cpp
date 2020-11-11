@@ -1,8 +1,3 @@
-//#include <new>
-//#include <functional>
-//
-//#include "HashMap.h"
-//
 //namespace hashmap
 //{
 //
@@ -10,6 +5,7 @@
 //	HashMap<K, V>::HashMap()
 //		: mCapacity{ 16 }
 //		, mSize{}
+//		, mLoadFactor{ 0.5f }
 //	{
 //		mStateArray = new eState[mCapacity];
 //		mData = new std::pair<K, V>[mCapacity];
@@ -18,6 +14,7 @@
 //		{
 //			mStateArray[i] = eState::Available;
 //		}
+//
 //	}
 //	template <typename K, typename V>
 //	HashMap<K, V>::HashMap(size_t size)
@@ -52,25 +49,37 @@
 //	template <typename K, typename V>
 //	HashMap<K, V>& HashMap<K, V>::operator=(const HashMap& rhs)
 //	{
-//		delete[] mStateArray;
-//		delete[] mData;
-//
-//		mSize = rhs.mSize;
-//		mCapacity = rhs.mCapacity;
-//
-//		mStateArray = new eState[mCapacity];
-//		mData = new std::pair<K, V>[mCapacity];
-//
-//		for (size_t i{}; i < mCapacity; ++i)
+//		if (this != &rhs)
 //		{
-//			mData[i] = rhs.mData[i];
-//			mStateArray[i] = rhs.mStateArray[i];
+//			delete[] mStateArray;
+//			delete[] mData;
+//
+//			mSize = rhs.mSize;
+//			mCapacity = rhs.mCapacity;
+//
+//			mStateArray = new eState[mCapacity];
+//			mData = new std::pair<K, V>[mCapacity];
+//
+//			for (size_t i{}; i < mCapacity; ++i)
+//			{
+//				mStateArray[i] = rhs.mStateArray[i];
+//
+//				if (mStateArray[i] == eState::Used)
+//				{
+//					mData[i] = rhs.mData[i];
+//				}
+//
+//			}
 //		}
+//
+//		return *this;
+//
 //	}
 //
 //	template <typename K, typename V>
 //	HashMap<K, V>::~HashMap()
 //	{
+//		std::cout << "Destructing MyHashMap\n";
 //		delete[] mData;
 //		delete[] mStateArray;
 //	}
@@ -79,7 +88,7 @@
 //	bool HashMap<K, V>::Resize(size_t newCapacity)
 //	{
 //
-//		if (mLoadFactor >= static_cast<float>(newCapacity) / mSize)
+//		if (mLoadFactor >= mSize / static_cast<float>(newCapacity))
 //		{
 //			return false;
 //		}
@@ -87,7 +96,7 @@
 //		else
 //		{
 //			std::pair<K, V>* newDataArray = new std::pair<K, V>[newCapacity];
-//			eState newStateArray = new eState[newCapacity];
+//			eState* newStateArray = new eState[newCapacity];
 //
 //			for (size_t i{}; i < newCapacity; ++i)
 //			{
@@ -113,8 +122,8 @@
 //			}
 //
 //			mCapacity = newCapacity;
-//			delete mData;
-//			delete mStateArray;
+//			delete[] mData;
+//			delete[] mStateArray;
 //
 //			mData = newDataArray;
 //			mStateArray = newStateArray;
@@ -150,14 +159,17 @@
 //
 //			else
 //			{
-//				if (mData[hashValue].first == element.first)
+//				assert(mData[hashValue].first != insertElementKeyValue);
+//				hashValue = getHashValue(insertElementKeyValue, ++hashTryTimes);
+//				/*if (mData[hashValue].first == element.first)
 //				{
+//
 //					return false;
 //				}
 //				else
 //				{
 //					hashValue = getHashValue(insertElementKeyValue, ++hashTryTimes);
-//				}
+//				}*/
 //			}
 //		}
 //
@@ -293,21 +305,21 @@
 //	size_t HashMap<K, V>::getHashValue(const K& keyValue, size_t hashTime) const
 //	{
 //
-//		return (std::hash<K>()(keyValue) + std::hash<K>()(keyValue + 1) % mCapacity) % mCapacity;
+//		return (std::hash<K>()(keyValue) + std::hash<K>()(keyValue + hashTime) % mCapacity) % mCapacity;
 //	}
-//
 //
 //	template <typename K, typename V>
-//	std::ostream& operator<<(std::ostream& os, const HashMap<K, V>& hashMap)
+//	size_t HashMap<K, V>::GetCapacity() const
 //	{
-//		for (size_t i{}; i < hashMap.mCapacity; ++i)
-//		{
-//			if (hashMap.mStateArray[i] == eState::Used)
-//			{
-//				os << "{ " << hashMap.mData[i].first << ", " << hashMap.mData[i].second << " }\n";
-//			}
-//		}
-//
-//		return os;
+//		return mCapacity;
 //	}
+//
+//	template <typename K, typename V>
+//	size_t HashMap<K, V>::GetSize() const
+//	{
+//		return mSize;
+//	}
+//
+//
+//
 //}

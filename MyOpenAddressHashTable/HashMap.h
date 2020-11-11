@@ -1,6 +1,5 @@
 #pragma once
 #include <utility>
-#include <string>
 #include <iostream>
 
 
@@ -66,7 +65,7 @@ namespace hashmap
 	HashMap<K, V>::HashMap()
 		: mCapacity{ 16 }
 		, mSize{}
-		, mLoadFactor{ 1.0 }
+		, mLoadFactor{ 0.5f }
 	{
 		mStateArray = new eState[mCapacity];
 		mData = new std::pair<K, V>[mCapacity];
@@ -110,25 +109,37 @@ namespace hashmap
 	template <typename K, typename V>
 	HashMap<K, V>& HashMap<K, V>::operator=(const HashMap& rhs)
 	{
-		delete[] mStateArray;
-		delete[] mData;
-
-		mSize = rhs.mSize;
-		mCapacity = rhs.mCapacity;
-
-		mStateArray = new eState[mCapacity];
-		mData = new std::pair<K, V>[mCapacity];
-
-		for (size_t i{}; i < mCapacity; ++i)
+		if (this != &rhs)
 		{
-			mData[i] = rhs.mData[i];
-			mStateArray[i] = rhs.mStateArray[i];
+			delete[] mStateArray;
+			delete[] mData;
+
+			mSize = rhs.mSize;
+			mCapacity = rhs.mCapacity;
+
+			mStateArray = new eState[mCapacity];
+			mData = new std::pair<K, V>[mCapacity];
+
+			for (size_t i{}; i < mCapacity; ++i)
+			{
+				mStateArray[i] = rhs.mStateArray[i];
+
+				if (mStateArray[i] == eState::Used)
+				{
+					mData[i] = rhs.mData[i];
+				}
+				
+			}
 		}
+
+		return *this;
+		
 	}
 
 	template <typename K, typename V>
 	HashMap<K, V>::~HashMap()
 	{
+		std::cout << "Destructing MyHashMap\n";
 		delete[] mData;
 		delete[] mStateArray;
 	}
@@ -137,7 +148,7 @@ namespace hashmap
 	bool HashMap<K, V>::Resize(size_t newCapacity)
 	{
 
-		if (mLoadFactor >= static_cast<float>(newCapacity) / mSize)
+		if (mLoadFactor >= mSize / static_cast<float>(newCapacity))
 		{
 			return false;
 		}
@@ -171,8 +182,8 @@ namespace hashmap
 			}
 
 			mCapacity = newCapacity;
-			delete mData;
-			delete mStateArray;
+			delete[] mData;
+			delete[] mStateArray;
 
 			mData = newDataArray;
 			mStateArray = newStateArray;
@@ -208,14 +219,17 @@ namespace hashmap
 
 			else
 			{
-				if (mData[hashValue].first == element.first)
+				assert(mData[hashValue].first != insertElementKeyValue);
+				hashValue = getHashValue(insertElementKeyValue, ++hashTryTimes);
+				/*if (mData[hashValue].first == element.first)
 				{
+					
 					return false;
 				}
 				else
 				{
 					hashValue = getHashValue(insertElementKeyValue, ++hashTryTimes);
-				}
+				}*/
 			}
 		}
 
@@ -367,19 +381,5 @@ namespace hashmap
 	}
 
 
-	/*template <typename K, typename V>
-	std::ostream& operator<< (std::ostream& os, const HashMap<K, V>& hashMap)
-	{
-		for (size_t i{}; i < hashMap.mCapacity; ++i)
-		{
-			if (hashMap.mStateArray[i] == eState::Used)
-			{
-				os << "{ " << hashMap.mData[i].first << ", " << hashMap.mData[i].second << " }\n";
-			}
-		}
 
-		return os;
-
-	}
-}*/
 }
