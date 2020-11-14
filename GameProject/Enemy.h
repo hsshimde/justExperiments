@@ -16,6 +16,7 @@ namespace enemy
 	private:
 		size_t mX;	
 		size_t mY;
+		bool mbHit;
 
 	};
 }

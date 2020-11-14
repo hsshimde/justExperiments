@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 
+
 namespace spaceship
 {
 	class SpaceShip
@@ -11,7 +12,7 @@ namespace spaceship
 		SpaceShip& operator=(const SpaceShip& rhs) = delete;
 		//~SpaceShip();
 
-		void Attack();
+		void Attack(); 
 
 		friend std::ostream& operator<<(std::ostream& out, const SpaceShip& spaceShip);
 
@@ -22,6 +23,7 @@ namespace spaceship
 		SpaceShip();
 		size_t mX;
 		size_t mY;
+		
 
 	};
 }
