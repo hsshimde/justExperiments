@@ -34,7 +34,6 @@ namespace enemy
 						printf(" ");
 					}
 
-
 				}
 				printf("\n");
 			}
@@ -42,6 +41,49 @@ namespace enemy
 		
 		else
 		{
+			size_t enemySize{ 3 };
+
+
+			size_t enemyLegLength{ 2 };
+			size_t firstLegIndex{ 1 };
+			size_t secondLegIndex{ 3 };
+
+			for (size_t i{}; i < enemyLegLength; ++i)
+			{
+				for (size_t j{}; j < 2 * enemySize + 1; ++j)
+				{
+					if (j == firstLegIndex || j == secondLegIndex)
+					{
+						printf("|");
+					}
+
+					else
+					{
+						printf(" ");
+					}
+
+
+				}
+
+				printf("\n");
+			}
+
+
+			for (size_t i{}; i < enemySize; ++i)
+			{
+				for (size_t j{}; j < i; ++j)
+				{
+					printf(" ");
+				}
+
+				for (size_t j{}; j < 2 * (enemySize - i) - 1; ++j)
+				{
+					printf("*");
+				}
+
+				printf("\n");
+			}
+
 			
 		}
 

@@ -1,80 +1,22 @@
 #include <iostream>
+#include <cassert>
 #include "SpaceShip.h"
-
+void printDownSidePyramid(size_t n);
+void changeNumber(size_t& n);
 int main()
 {
-	size_t enemySize{ 5 };
-	for (size_t i{}; i < enemySize; ++i)
+
+	for (size_t i{}; i < 10; ++i)
 	{
-		for (size_t j{1}; j < enemySize - i; ++j)
-		{
-			printf(" ");
-		}
-
-		for (size_t j{}; j < 2 * i + 1; ++j)
-		{
-			printf("*");
-		}
-
-		printf("\n");
+		printDownSidePyramid(i);
 	}
 
-	size_t enemyLegLength{ 2 };
+	size_t experiment{ 10 };
 
-	for (size_t i{}; i < enemyLegLength; ++i)
-	{
-		size_t firstLegIndex{ 1 };
-		size_t secondLegIndex{ 5 };
-		
-		if (i % 2 == 0)
-		{
-			for (size_t j{}; j < 2 * enemySize + 1; ++j)
-			{
-				if (j != firstLegIndex && j != secondLegIndex-1)
-				{
-					printf(" ");
-				}
+	changeNumber(experiment);
+	//assert(experiment != 20);
 
-				else if(j == firstLegIndex)
-				{
-					printf("|_");
-				}
-
-				else
-				{
-					printf("_|");
-				}
-
-			}
-		}
-
-		else
-		{
-			for (size_t j{}; j < 2 * enemySize + 1; ++j)
-			{
-				if (j != firstLegIndex && j != secondLegIndex - 1)
-				{
-					printf(" ");
-				}
-
-				else if (j == firstLegIndex)
-				{
-					printf("_|");
-				}
-
-				else
-				{
-					printf("|_");
-				}
-			}
-
-		}
-
-		printf("\n");
-		
-
-	}
-
+	
 	return 0;
 	
 
@@ -106,4 +48,26 @@ namespace spaceship
 
 		return out;
 	}
+}
+
+void printDownSidePyramid(size_t n)
+{
+	for (size_t i{}; i < n; ++i)
+	{
+		for (size_t j{}; j < i; ++j)
+		{
+			printf(" ");
+		}
+		for (size_t j{}; j < 2 * n + 1 - 2 * (i + 1); ++j)
+		{
+			printf("*");
+		}
+
+		printf("\n");
+	}
+}
+
+void changeNumber(size_t& n)
+{
+	n += 10;
 }
