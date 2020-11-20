@@ -32,7 +32,6 @@ namespace assignment4
 		, Right{ nullptr }
 		, Left{ nullptr }
 	{
-
 		Data = std::move(data);
 	}
 }
