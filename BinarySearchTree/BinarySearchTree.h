@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-namespace assignment4
+namespace bst
 {
 	template<typename T>
 	class TreeNode;
@@ -17,26 +17,28 @@ namespace assignment4
 		bool Delete(const T& data);
 		const std::weak_ptr<TreeNode<T>> GetRootNode() const;
 		static std::vector<T> TraverseInOrder(const std::shared_ptr<TreeNode<T>> startNode);
+		bool Clear();
 
 	private:
-		static void traverseInOrderRecursive(const std::shared_ptr<TreeNode<T>>, std::vector<T>& v);
+		static void traverseInOrderRecursive(std::shared_ptr<TreeNode<T>>, std::vector<T>& v);
 		std::shared_ptr<TreeNode<T>> mRoot;
-		
+
 
 	};
+
 
 	template<typename T>
 	void BinarySearchTree<T>::Insert(std::unique_ptr<T> data)
 	{
 		if (mRoot == nullptr)
 		{
-			mRoot = std::make_shared<TreeNode<T>>(data);
+			mRoot = std::make_shared<TreeNode<T>>(std::make_unique<T>(*data));
 			return;
 		}
 
-		auto targetNode{ mRoot };
-		auto left{ (*targetNode).Left };
-		auto right{ (*targetNode).Right };
+		std::shared_ptr<TreeNode<T>> targetNode{ mRoot };
+		std::shared_ptr<TreeNode<T>> left{ (*targetNode).Left };
+		std::shared_ptr<TreeNode<T>> right{ (*targetNode).Right };
 
 		while (true)
 		{
@@ -44,7 +46,7 @@ namespace assignment4
 			{
 				if (left == nullptr)
 				{
-					(*targetNode).Left = std::make_shared<TreeNode<T>>(targetNode, data);
+					(*targetNode).Left = std::make_shared<TreeNode<T>>(targetNode, std::make_unique<T>(*data));
 					return;
 				}
 
@@ -54,15 +56,13 @@ namespace assignment4
 					left = (*targetNode).Left;
 					right = (*targetNode).Right;
 				}
-
-
 			}
 
 			else
 			{
 				if (right == nullptr)
 				{
-					(*targetNode).Right = std::make_shared<TreeNode<T>>(targetNode, data);
+					(*targetNode).Right = std::make_shared<TreeNode<T>>(targetNode, std::make_unique<T>(*data));
 					return;
 				}
 
@@ -157,11 +157,13 @@ namespace assignment4
 					if (targetNode == mRoot)
 					{
 						mRoot = nullptr;
+						return true;
 					}
 
 					else
 					{
-						auto parent{ std::make_shared<TreeNode<T>>((*targetNode).Parent) };
+						auto parent{ (*targetNode).Parent.lock() };
+
 						if (targetNode == (*parent).Right)
 						{
 							(*parent).Right = nullptr;
@@ -174,6 +176,8 @@ namespace assignment4
 
 						targetNode = nullptr;
 
+						return true;
+
 					}
 
 				}
@@ -182,7 +186,7 @@ namespace assignment4
 				{
 					if (targetNode == mRoot)
 					{
-						
+
 						(*left).Parent.reset();
 						mRoot = left;
 						targetNode = nullptr;
@@ -191,8 +195,8 @@ namespace assignment4
 
 					else
 					{
-						auto parent{ std::make_shared<TreeNode<T>>((*targetNode).Parent) };
-						std::weak_ptr<TreeNode<T>> newParent;
+						auto parent{ (*targetNode).Parent.lock() };
+						std::weak_ptr<TreeNode<T>> newParent{ parent };
 
 						if (targetNode == (*parent).Right)
 						{
@@ -232,6 +236,7 @@ namespace assignment4
 							std::weak_ptr<TreeNode<T>> newParent{ deleteTargetParent };
 							std::shared_ptr<TreeNode<T>> deleteTargetRight{ (*deleteTarget).Right };
 							(*deleteTargetRight).Parent.swap(newParent);
+							(*deleteTargetParent).Right = deleteTargetRight;
 						}
 
 						else
@@ -240,6 +245,8 @@ namespace assignment4
 						}
 
 						deleteTarget = nullptr;
+
+						return true;
 					}
 
 					else
@@ -249,11 +256,12 @@ namespace assignment4
 							std::weak_ptr<TreeNode<T>> newParent{ deleteTargetParent };
 							std::shared_ptr<TreeNode<T>> deleteTargetRight{ (*deleteTarget).Right };
 							(*deleteTargetRight).Parent.swap(newParent);
+							(*deleteTargetParent).Left = deleteTargetRight;
 						}
 
 						else
 						{
-							(*deleteTargetParent).Right = nullptr;
+							(*deleteTargetParent).Left = nullptr;
 						}
 
 						deleteTarget = nullptr;
@@ -262,7 +270,7 @@ namespace assignment4
 
 					return true;
 				}
-				
+
 			}
 
 			else if (data < *(*targetNode).Data)
@@ -277,7 +285,7 @@ namespace assignment4
 					left = (*targetNode).Left;
 					right = (*targetNode).Right;
 				}
-				
+
 			}
 
 			else
@@ -292,7 +300,7 @@ namespace assignment4
 					targetNode = (*targetNode).Right;
 					left = (*targetNode).Left;
 					right = (*targetNode).Right;
-					
+
 				}
 			}
 		}
@@ -308,26 +316,43 @@ namespace assignment4
 
 		if (startNode != nullptr)
 		{
-			traverseInOrderRecursive(std::make_shared<TreeNode<T>>(startNode), v);
+			traverseInOrderRecursive(startNode, v);
 		}
 
 		return v;
 	}
 
 	template <typename T>
-	void BinarySearchTree<T>::traverseInOrderRecursive(const std::shared_ptr<TreeNode<T>> node, std::vector<T>& v)
+	void BinarySearchTree<T>::traverseInOrderRecursive(std::shared_ptr<TreeNode<T>> node, std::vector<T>& v)
 	{
 		if ((*node).Left != nullptr)
 		{
-			traverseInOrderRecursive(std::make_shared<TreeNode<T>>((*node).Left), v);
+			traverseInOrderRecursive((*node).Left, v);
 		}
 
 		v.push_back(*(*node).Data);
 
 		if ((*node).Right != nullptr)
 		{
-			traverseInOrderRecursive(std::make_shared<TreeNode<T>>((*node).Right), v);
+			traverseInOrderRecursive((*node).Right, v);
 		}
 
+		return;
+
+	}
+
+	template <typename T>
+	bool BinarySearchTree<T>::Clear()
+	{
+		if (mRoot != nullptr)
+		{
+			mRoot = nullptr;
+			return true;
+		}
+
+		else
+		{
+			return false;
+		}
 	}
 }

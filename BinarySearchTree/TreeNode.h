@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace assignment4
+namespace bst
 {
 	template<typename T>
 	class TreeNode final
@@ -28,10 +28,11 @@ namespace assignment4
 
 	template<typename T>
 	TreeNode<T>::TreeNode(std::shared_ptr<TreeNode<T>> parent, std::unique_ptr<T> data)
-		: Parent{ parent }
+		: Parent{ }
 		, Right{ nullptr }
 		, Left{ nullptr }
 	{
+		Parent = std::weak_ptr<TreeNode<T>>(parent);
 		Data = std::move(data);
 	}
 }
