@@ -168,13 +168,84 @@ namespace bst
 				if (targetNode == mRoot)
 				{
 					mRoot = left;
+					left->Parent = nullptr;
+					delete targetNode;
+
+					return true;
 					
 				}
 
 				else
 				{
+					TreeNode<T>* newPaernt{ targetNode->Parent };
+					left->Parent = targetNode->Parent;
+					
+					if (targetNode == newPaernt->Right)
+					{
+						newPaernt->Right = left;
+					}
 
+					else
+					{
+						newPaernt->Left = left;
+					}
+
+					delete targetNode;
+
+					return true;
 				}
+
+
+			}
+
+			else
+			{
+				TreeNode<T>* deleteTarget{ right };
+
+				while (deleteTarget->Left != nullptr)
+				{
+					deleteTarget = deleteTarget->Left;
+				}
+
+				targetNode->Data = deleteTarget->Data;
+
+				TreeNode<T>* deleteTargetParent{ deleteTarget->Parent };
+
+				if (deleteTarget == deleteTargetParent->Right)
+				{
+					if (deleteTarget->Right != nullptr)
+					{
+						TreeNode<T>* rightNodeToDeleteTarget{ deleteTarget->Right };
+						deleteTargetParent->Right = rightNodeToDeleteTarget;
+						rightNodeToDeleteTarget->Parent = deleteTargetParent;
+					}
+
+					else
+					{
+						deleteTargetParent->Right = nullptr;
+					}
+
+					delete deleteTarget;
+				}
+
+				else
+				{
+					if (deleteTarget->Right != nullptr)
+					{
+						TreeNode<T>* rightNodeToDeleteTarget{ deleteTarget->Right };
+						deleteTargetParent->Left = rightNodeToDeleteTarget;
+						rightNodeToDeleteTarget->Parent = deleteTargetParent;
+					}
+
+					else
+					{
+						deleteTargetParent->Left = nullptr;
+					}
+
+					delete deleteTarget;
+				}
+
+				return true;
 			}
 		}
 
