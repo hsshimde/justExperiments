@@ -17,7 +17,7 @@ namespace bst
 	private:
 		TreeNode* insertRecursive(const T& element, TreeNode* parent, TreeNode* node);
 		TreeNode* searchRecursiveNullable(const T& element, const TreeNode* node);
-		bool deleteRecursive(TreeNode* targetNode);
+		//bool deleteRecursive(TreeNode* targetNode);
 		void traverseInOrderRecursive(const TreeNode<T>* node, std::vector<T>& v);
 
 		TreeNode* mRoot;
@@ -70,6 +70,33 @@ namespace bst
 	}
 
 	template <typename T>
+	TreeNode<T>* BinarySearchTree<T>::searchRecursiveNullable(const T& element, const TreeNode<T>* node)
+	{
+		if (node != nullptr)
+		{
+			if (element == node->Data)
+			{
+				return node;
+			}
+
+			else if (element < node->Data)
+			{
+				return searchRecursiveNullable(element, node->Left);
+			}
+
+			else
+			{
+				return searchRecursiveNullable(element, node->Right);
+			}
+		}
+
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	template <typename T>
 	std::vector<T> BinarySearchTree<T>::GetDataInOrder(const T& element)
 	{
 		std::vector<T> v{};
@@ -91,5 +118,71 @@ namespace bst
 		{
 			traverseInOrderRecursive(node->Left, v);
 		}
+
+		v.push_back(node->)
 	}
+
+	template <typename T>
+	bool BinarySearchTree<T>::Delete(const T& element)
+	{
+		TreeNode<T>* targetNode{ Search(element) };
+
+		if (targetNode != nullptr)
+		{
+			TreeNode<T>* right{ targetNode->Right };
+			TreeNode<T>* left{ targetNode->Left };
+
+			if (right == nullptr && left == nullptr)
+			{
+				if (targetNode == mRoot)
+				{
+					delete mRoot;
+					mRoot = nullptr;
+
+					return true;
+				}
+
+				else
+				{
+					TreeNode<T>* parent{ targetNode->Parent };
+
+					if (targetNode == parent->Right)
+					{
+						parent->Right = nullptr;
+
+					}
+
+					else
+					{
+						parent->Left = nullptr;
+					}
+
+					delete targetNode;
+
+					return true;
+				}
+			}
+
+			else if (right == nullptr)
+			{
+				if (targetNode == mRoot)
+				{
+					mRoot = left;
+					
+				}
+
+				else
+				{
+
+				}
+			}
+		}
+
+		else
+		{
+			return false;
+		}
+	}
+
+	
 }
