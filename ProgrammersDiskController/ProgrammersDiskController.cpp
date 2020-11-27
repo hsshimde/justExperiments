@@ -27,6 +27,7 @@ public:
 
 
 int solution(vector<vector<int>> jobs) {
+
 	int answer = 0;
 
 	priority_queue<jobData, vector<jobData>, CompareByStartTime> qTime;
@@ -45,6 +46,12 @@ int solution(vector<vector<int>> jobs) {
 
 	while (true)
 	{
+		while (!qTime.empty() && time >= get<0>(qTime.top()))
+		{
+			qWork.push(qTime.top());
+			qTime.pop();
+		}
+
 		if (time - get<1>(front) >= get<2>(front))
 		{
 			if (get<0>(front) != -1)
@@ -62,11 +69,11 @@ int solution(vector<vector<int>> jobs) {
 
 		}
 
-		while (!qTime.empty() && time >= get<0>(qTime.top()))
+		/*while (!qTime.empty() && time >= get<0>(qTime.top()))
 		{
 			qWork.push(qTime.top());
 			qTime.pop();
-		}
+		}*/
 
 		if (qTime.empty() && qWork.empty() && get<0>(front) == -1)
 		{
@@ -80,13 +87,13 @@ int solution(vector<vector<int>> jobs) {
 	return static_cast<int>(answer / jobs.size());
 }
 
-int main()
-{
-	//[0, 3] , [1, 9], [2, 6]]	9
-
-	vector<vector<int>> jobs{ {0,3},{1,9},{2,6},{2,9},{1,7} };
-
-	int answer = solution(jobs);
-
-	return 0;
-}
+//int main()
+//{
+//	//[0, 3] , [1, 9], [2, 6]]	9
+//
+//	vector<vector<int>> jobs{ {0,3},{1,9},{2,6}/*,{2,9},{1,7}*/ };
+//
+//	int answer = solution(jobs);
+//
+//	return 0;
+//}

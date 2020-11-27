@@ -4,13 +4,13 @@
 using namespace std;
 
 
-int main()
-{
-    vector<vector<string>> clothes{};
-    auto answer = solution(clothes);
-
-    
-}
+//int main()
+//{
+//    vector<vector<string>> clothes{};
+//    auto answer = solution(clothes);
+//
+//    
+//}
 int solution(vector<vector<string>> clothes) {
     int answer = 0;
 

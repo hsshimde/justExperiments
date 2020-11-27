@@ -73,14 +73,14 @@ size_t getSameLetterCount(const string& s1, const string& s2)
 //
 //}
 
-int main()
-{
-    string begin{ "hit" }, target{ "cog" };
-    vector<string> words{ "hot","dot","dog","lot","log","cog" };
-
-    int answer = solution(begin, target, words);
-
-    printf("%d", answer);
-
-    return 0;
-}
+//int main()
+//{
+//    string begin{ "hit" }, target{ "cog" };
+//    vector<string> words{ "hot","dot","dog","lot","log","cog" };
+//
+//    int answer = solution(begin, target, words);
+//
+//    printf("%d", answer);
+//
+//    return 0;
+//}
