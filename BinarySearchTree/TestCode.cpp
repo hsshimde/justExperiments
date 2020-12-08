@@ -11,11 +11,11 @@ void testCode3();
 
 int main()
 {
-    /*testCode();
+    testCode();
     testCode2();
-    testCode3();*/
+    testCode3();
 
-    BinarySearchTree<int> tree;
+    BinarySearchTree<int> tree; 
     tree.Insert(std::make_unique<int>(11));
     tree.Insert(std::make_unique<int>(13));
     tree.Insert(std::make_unique<int>(-6));
