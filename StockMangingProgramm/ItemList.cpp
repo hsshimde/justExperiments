@@ -94,4 +94,47 @@ namespace manager
 			return true;
 		}
 	}
+	
+	bool ItemList::Remove(const size_t itemNumber)
+	{
+		if (mNumberMap.find(itemNumber) == end(mNumberMap))
+		{
+			return false;
+		}
+
+		else
+		{
+			delete mNumberMap[itemNumber];
+
+			mNumberMap.erase(itemNumber);
+
+			return true;
+		}
+	}
+
+	bool ItemList::Sell(const size_t itemNumber, size_t count)
+	{
+		if (mNumberMap.find(itemNumber) == end(mNumberMap))
+		{
+			return false;
+		}
+
+		Item* pItem = mNumberMap[itemNumber];
+
+		return pItem->Sell(count);
+	}
+
+	bool ItemList::Buy(const size_t itemNumber, size_t count)
+	{
+		if (mNumberMap.find(itemNumber) == end(mNumberMap))
+		{
+			return false;
+		}
+
+		Item* pItem = mNumberMap[itemNumber];
+
+
+		return pItem->Buy(count);
+		
+	}
 }
