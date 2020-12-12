@@ -26,6 +26,10 @@ namespace manager
 		size_t GetMinCount() const;
 		size_t GetMaxCount() const;
 
+
+		void SetMaxStock(size_t newMaxCount);
+		void SetMinStock(size_t newMinCount);
+
 		
 
 		

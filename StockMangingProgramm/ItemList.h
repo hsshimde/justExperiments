@@ -16,7 +16,6 @@ namespace manager
 		ItemList& operator=(ItemList&& rhs) noexcept;
 		
 		bool Add(Item* item);
-		//bool RemoveByName(const std::string& name);
 		bool Remove(const size_t number);
 
 		bool Sell(size_t itemNumber, size_t count);

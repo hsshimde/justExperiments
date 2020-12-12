@@ -63,4 +63,14 @@ namespace manager
 	}
 
 
+	void Item::SetMaxStock(size_t newMaxCount)
+	{
+		mMaxStock = newMaxCount;
+	}
+
+	void Item::SetMinStock(size_t newMinCount)
+	{
+		mMinStock = newMinCount;
+	}
+
 }
