@@ -12,9 +12,10 @@ namespace manager
 	{
 	public:
 		Item() = delete;
-		Item(const eProductType type, const std::string& itemName, size_t itemNumber);
+		Item(const std::string& itemName, size_t itemNumber);
 		Item(const Item& rhs) = default;
 		Item(Item&& rhs) = default;
+		
 		
 
 		bool Sell(size_t sellCount);
@@ -30,16 +31,20 @@ namespace manager
 		void SetMaxStock(size_t newMaxCount);
 		void SetMinStock(size_t newMinCount);
 
+
+		size_t RefillMinAndReturnCost();
+		size_t RefillMaxAndReturnCost();
+
 		
 
 		
 	private:
-		eProductType mType;
 		std::string mName;
 		size_t mItemNumber;
 		size_t mCurrentItemCount;
 		size_t mMinStock;
 		size_t mMaxStock;
+		size_t mSalePrice;
 		
 
 	};

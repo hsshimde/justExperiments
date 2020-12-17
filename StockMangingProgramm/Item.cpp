@@ -2,9 +2,8 @@
 
 namespace manager
 {
-	Item::Item(const eProductType type,const std::string& itemName, size_t itemNumber)
-		: mType(type)
-		, mName(itemName)
+	Item::Item(const std::string& itemName, size_t itemNumber)
+		: mName(itemName)
 		, mItemNumber(itemNumber)
 		, mCurrentItemCount(0)
 		, mMaxStock()
@@ -27,7 +26,7 @@ namespace manager
 
 	bool Item::Sell(size_t sellCount)
 	{
-		if (mCurrentItemCount <= sellCount)
+		if (mCurrentItemCount < sellCount)
 		{
 			return false;
 		}
@@ -71,6 +70,31 @@ namespace manager
 	void Item::SetMinStock(size_t newMinCount)
 	{
 		mMinStock = newMinCount;
+	}
+
+	size_t Item::RefillMinAndReturnCost()
+	{
+		if (mCurrentItemCount < mMinStock)
+		{
+			size_t buyCount = mMinStock - mCurrentItemCount;
+
+			mCurrentItemCount = mMinStock;
+
+			return buyCount * mSalePrice;
+		}
+	}
+
+	size_t Item::RefillMaxAndReturnCost()
+	{
+		if (mCurrentItemCount < mMaxStock)
+		{
+			size_t buyCount = mMaxStock - mCurrentItemCount;
+
+			mCurrentItemCount = mMaxStock;
+
+			return buyCount * mSalePrice;
+		}
+
 	}
 
 }
