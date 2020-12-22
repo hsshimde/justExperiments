@@ -16,6 +16,9 @@ namespace account
 		void MakeDeposit(const double& amount, const std::string& note);
 		bool MakeWithdrwal(const double& amount, const std::string& note);
 
+		void ShowTransactions() const;
+	
+
 	private:
 		std::string mName;
 		double mBalance;

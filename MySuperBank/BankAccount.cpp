@@ -1,3 +1,4 @@
+#include <iostream>
 #include "BankAccout.h"
 
 
@@ -47,6 +48,15 @@ namespace account
 			mAllTransactions.push_back(new Transaction(amount, note));
 			return true;
 		}
+	}
+
+	void BankAccount::ShowTransactions() const
+	{
+		for (size_t i = 0; i < mAllTransactions.size(); i++)
+		{
+			std::cout << "[" << i + 1 << "] :" << mAllTransactions[i]->GetAmount() << ", " << mAllTransactions[i]->GetNote() << std::endl;
+		}
+		return;
 	}
 
 
