@@ -13,13 +13,15 @@ namespace project
 		~SmartStack() = default;
 		SmartStack(const SmartStack& rhs) = default;
 		SmartStack& operator=(const SmartStack& rhs) = default;
+		SmartStack(SmartStack&& rhs) = default;
+		SmartStack& operator=(SmartStack&& rhs) = default;
 
 		void Push(const T& element);
-		T& Peek();
+		T Peek() const;
 		void Pop();
 
 		T GetMax() const;
-		T  GetMin() const;
+		T GetMin() const;
 		double GetAverage() const;
 		double GetVariance() const;
 		double GetStandardDeviation() const;
@@ -28,7 +30,6 @@ namespace project
 		std::stack<T> mMainStack;
 		std::stack<T> mMaxStack;
 		std::stack<T> mMinStack;
-		size_t mSize;
 		double mTotalSum;
 		double mTotalSquaredSum;
 		
@@ -41,7 +42,7 @@ namespace project
 	template <typename T>
 	void SmartStack<T>::Push(const T& element)
 	{
-		if (mSize < 1)
+		if (mMainStack.size() < 1)
 		{
 			mMaxStack.push(element);
 			mMinStack.push(element);
@@ -61,12 +62,12 @@ namespace project
 		mMainStack.push(element);
 		mTotalSum += element;
 		mTotalSquaredSum += static_cast<double>(element * element);
-		mSize++;
+		mMainStack.size()++;
 	}
 
 
 	template <typename T>
-	T& SmartStack<T>::Peek() 
+	T SmartStack<T>::Peek() const 
 	{
 		return mMainStack.top();
 	}
@@ -85,14 +86,14 @@ namespace project
 		}
 		mTotalSum -= top;
 		mTotalSquaredSum -= top * top;
-		mSize--;
+		mMainStack.size()--;
 		return mMainStack.pop();
 	}
 
 	template <typename T>
 	T SmartStack<T>::GetMax() const
 	{
-		if (mSize<1)
+		if (mMainStack.size()<1)
 		{
 			return std::numeric_limits<T>::lowest();
 		}
@@ -105,7 +106,7 @@ namespace project
 	template <typename T>
 	T SmartStack<T>::GetMin() const
 	{
-		if (mSize<1)
+		if (mMainStack.size()<1)
 		{
 			return std::numeric_limits<T>::max();
 		}
@@ -118,14 +119,14 @@ namespace project
 	template <typename T>
 	double SmartStack<T>::GetAverage() const
 	{
-		return mTotalSum / static_cast<double>(mSize);
+		return mTotalSum / static_cast<double>(mMainStack.size());
 	}
 
 	template <typename T>
 	double SmartStack<T>::GetVariance() const
 	{
 		double average = GetAverage();
-		double variance = mTotalSquaredSum / static_cast<double>(mSize) - average * average;
+		double variance = mTotalSquaredSum / static_cast<double>(mMainStack.size()) - average * average;
 		return variance;
 	}
 
