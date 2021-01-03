@@ -12,14 +12,13 @@ namespace project
 	public:
 		QueueStack(size_t stackSize);
 		QueueStack(QueueStack& rhs);
-		//QueueStack(QueueStack&& rhs);
 		~QueueStack();
-
 		QueueStack& operator=(QueueStack& rhs);
-		//QueueStack& operator=(QueueStack&& rhs);
+
 		void Push(const T& element);
 		T Peek() const;
 		bool Pop();
+
 		T GetMax();
 		T GetMin();
 		double GetAverage() const;
@@ -133,4 +132,42 @@ namespace project
 	{
 		return mTotalSum / mSize;
 	}
+
+	template <typename T>
+	void QueueStack<T>::Push(const T& element)
+	{
+		if (mSize % mMaxStackSize == 0)
+		{
+			mQueueStack.push(new SmartStack());
+		}
+
+		SmartStack<T>* backStack = mQueueStack.back();
+		backStack->Push(element);
+		mTotalSum += element;
+		return;
+
+	}
+
+	template <typename T>
+	T QueueStack<T>::Peek() const
+	{
+		assert(!mQueueStack.empty());
+		T frontStackTopElement = mQueueStack.front().top();
+		return frontStackTopElement;
+	}
+
+	template <typename T>
+	bool QueueStack<T>::Pop()
+	{
+		if (mQueueStack.empty())
+		{
+			return false;
+		}
+
+		else
+		{
+			SmartStack<T>* frontStack = mQueueStack.front();
+		}
+	}
+
 }
