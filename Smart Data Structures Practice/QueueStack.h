@@ -17,7 +17,9 @@ namespace project
 
 		QueueStack& operator=(QueueStack& rhs);
 		//QueueStack& operator=(QueueStack&& rhs);
-
+		void Push(const T& element);
+		T Peek() const;
+		bool Pop();
 		T GetMax();
 		T GetMin();
 		double GetAverage() const;
