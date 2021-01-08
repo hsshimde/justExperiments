@@ -29,10 +29,11 @@ namespace project
 	}
 
 	MyString::MyString(MyString&& rhs) noexcept
-		: mCStr(std::move(rhs.mCStr))
+		: mCStr(rhs.mCStr)
 		, mLength(rhs.mLength)
 	{
-
+		rhs.mCStr = nullptr;
+		rhs.mLength = 0;
 	}
 
 	MyString::~MyString()
@@ -55,13 +56,15 @@ namespace project
 		return *this;
 	}
 	
-	MyString& MyString::operator=(MyString&& rhs)
+	MyString& MyString::operator=(MyString&& rhs) noexcept
 	{
 		if (this != &rhs)
 		{
 			delete mCStr;
 			mLength = rhs.mLength;
-			mCStr = std::move(rhs.mCStr);
+			mCStr = rhs.mCStr;
+			rhs.mCStr = nullptr;
+			rhs.mLength = 0;
 		}
 		return *this;
 	}
@@ -113,6 +116,19 @@ namespace project
 		{
 			return false;
 		}
+		else
+		{
+			for (size_t i = index; i < mLength; i++)
+			{
+				mCStr[i] = mCStr[i + 1];
+			}
+			return true;
+		}
+	}
 
+	std::ostream& operator<<(std::ostream& out, const MyString& rhs)
+	{
+		out << rhs.GetCString();
+		return out;
 	}
 }

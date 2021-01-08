@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 namespace project
 {
@@ -19,6 +20,8 @@ namespace project
 		bool Append(size_t totalLength);
 		bool Append(size_t totalLength, char ch);
 		bool Remove(size_t index);
+
+		friend std::ostream& operator<<(std::ostream& out, const MyString& str);
 
 	private:
 		char* mCStr;
