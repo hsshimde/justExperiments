@@ -52,6 +52,19 @@ namespace project
 	}
 
 	template <typename T>
+	MyVector<T>::MyVector(const MyVector& rhs)
+		: mData()
+		, mSize(rhs.mSize)
+		, mCapacity(rhs.mCapacity)
+	{
+		mData = new T[mCapacity];
+		for (size_t i = 0; i < mSize; i++)
+		{
+			mData[i] = rhs.mData[i];
+		}
+	}
+
+	template <typename T>
 	MyVector<T>::~MyVector()
 	{
 		delete mData;
