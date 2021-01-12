@@ -79,7 +79,7 @@ namespace lab10
 			if (index != 0)
 			{
 				std::shared_ptr<Node<T>> tempNode = mHead;
-				for (size_t i = 0; i < index-1; i++)
+				for (size_t i = 0; i < index - 1; i++)
 				{
 					tempNode = tempNode->Next;
 				}
@@ -117,7 +117,7 @@ namespace lab10
 			}
 			tempNode = tempNode->Next;
 		}
-		if (tempNode->Next!=nullptr)
+		if (tempNode->Next != nullptr)
 		{
 			std::shared_ptr<Node<T>> previousNode = tempNode->Previous.lock();
 			std::shared_ptr<Node<T>> nextNode = tempNode->Next;
@@ -132,20 +132,20 @@ namespace lab10
 		}
 		mLength--;
 		return true;
-		}
+	}
 
 	template<typename T>
 	bool DoublyLinkedList<T>::Search(const T& data) const
 	{
-		if (mLength<1)
+		if (mLength < 1)
 		{
 			return false;
 		}
 
 		std::shared_ptr<Node<T>> tempNode = mHead;
-		while (*tempNode->Data!=data)
+		while (*tempNode->Data != data)
 		{
-			if (tempNode->Next==nullptr)
+			if (tempNode->Next == nullptr)
 			{
 				return false;
 			}
@@ -159,7 +159,7 @@ namespace lab10
 	template<typename T>
 	std::shared_ptr<Node<T>> DoublyLinkedList<T>::operator[](unsigned int index) const
 	{
-		if (mLength<=index)
+		if (mLength <= index)
 		{
 			return nullptr;
 		}
