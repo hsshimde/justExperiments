@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30621.155
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "consoleFPS", "consoleFPS.vcxproj", "{42FFFD08-64F4-4ABE-82EC-75217AA63999}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{42FFFD08-64F4-4ABE-82EC-75217AA63999}.Debug|x64.ActiveCfg = Debug|x64
+		{42FFFD08-64F4-4ABE-82EC-75217AA63999}.Debug|x64.Build.0 = Debug|x64
+		{42FFFD08-64F4-4ABE-82EC-75217AA63999}.Debug|x86.ActiveCfg = Debug|Win32
+		{42FFFD08-64F4-4ABE-82EC-75217AA63999}.Debug|x86.Build.0 = Debug|Win32
+		{42FFFD08-64F4-4ABE-82EC-75217AA63999}.Release|x64.ActiveCfg = Release|x64
+		{42FFFD08-64F4-4ABE-82EC-75217AA63999}.Release|x64.Build.0 = Release|x64
+		{42FFFD08-64F4-4ABE-82EC-75217AA63999}.Release|x86.ActiveCfg = Release|Win32
+		{42FFFD08-64F4-4ABE-82EC-75217AA63999}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E57A9F6E-F37D-49F7-BC38-9B749F064917}
+	EndGlobalSection
+EndGlobal
