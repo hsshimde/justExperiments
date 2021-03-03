@@ -1,6 +1,8 @@
 
 #include <iostream>
 #include <Windows.h>
+#include <string>
+#include <cmath>
 
 int nScreenWidth = 120;
 //int nScreenHeight = 40;
@@ -15,7 +17,7 @@ float fPlayerAngle = 0.0f;
 int nMapHeight = 16;
 int nMapWidth = 16;
 
-float fFieldOfView = 3.14159f / 4.0f;
+float fFieldOfView = 3.14159f / 12.0f;
 float fDepth = 16.0f;
 
 
@@ -55,7 +57,7 @@ int main()
 		}
 		if (GetAsyncKeyState((unsigned short)'D') & 0x8000)
 		{
-			if (fPlayerPosX < 15.0f)
+			if (fPlayerPosX < 14.0f)
 			{
 				fPlayerPosX += 0.02f;
 			}
@@ -64,14 +66,14 @@ int main()
 		{
 			if (fPlayerPosY > 1.0f)
 			{
-				fPlayerPosY -= 0.01f;
+				fPlayerPosY -= 0.02f;
 			}
 		}
 		if (GetAsyncKeyState((unsigned short)'S') & 0x8000)
 		{
-			if (fPlayerPosY < 15.0f)
+			if (fPlayerPosY < 14.0f)
 			{
-				fPlayerPosY += 0.01f;
+				fPlayerPosY += 0.02f;
 			}
 		}
 
@@ -102,14 +104,16 @@ int main()
 				}
 			}
 			int nCeiling = (int)((float)(nViewHeight) / 2.0f - (float)(nViewHeight) / fDistanceToWall);
+			//nCeiling += nAbstractMapHeight;
+			int nFloor = nViewHeight - nCeiling;
 			nCeiling += nAbstractMapHeight;
-			int nFloor = nScreenHeight - nCeiling;
-			
+			nFloor += nAbstractMapHeight;
+
 
 			for (int y = 0; y < nScreenHeight; y++)
 			{
-				int nPlayerPosX = (int)(fPlayerPosX);
-				int nPlayerPosY = (int)(fPlayerPosY);
+				int nPlayerPosX = static_cast<int>(std::roundf((fPlayerPosX)));
+				int nPlayerPosY = static_cast<int>(std::roundf((fPlayerPosY)));
 				if (y < nAbstractMapHeight)
 				{
 					if (y < nMapHeight)
@@ -122,11 +126,11 @@ int main()
 							}
 							else
 							{
-								screen[y * nScreenWidth + x] = map[y* nMapWidth + x];
+								screen[y * nScreenWidth + x] = map[y * nMapWidth + x];
 							}
 
 						}
-						else 
+						else
 						{
 							screen[y * nScreenWidth + x] = ' ';
 						}
@@ -144,12 +148,24 @@ int main()
 				{
 					screen[y * nScreenWidth + x] = '0';
 				}
-				else
+				else //if (y > nFloor)
 				{
 					screen[y * nScreenWidth + x] = ' ';
 				}
 			}
-			
+
+		}
+		std::wstring characterPosInfo = L"X : ";
+		characterPosInfo += std::to_wstring(fPlayerPosX);
+		characterPosInfo += L", Y : ";
+		characterPosInfo += std::to_wstring(fPlayerPosY);
+
+		for (int i = 0; i < (int)characterPosInfo.size(); ++i)
+		{
+			if (i+20 < std::wcslen(screen))
+			{
+				screen[i + 20] = characterPosInfo[i];
+			}
 		}
 		screen[nScreenHeight * nScreenWidth - 1] = '\0';
 		WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
