@@ -10,14 +10,14 @@ int nAbstractMapHeight = 20;
 int nViewHeight = 40;
 int nScreenHeight = nViewHeight + nAbstractMapHeight;
 
-float fPlayerPosX = 8.0f;
-float fPlayerPosY = 8.0f;
+float fPlayerPosX = 0.0f;
+float fPlayerPosY = 0.0f;
 float fPlayerAngle = 0.0f;
 
 int nMapHeight = 16;
 int nMapWidth = 16;
 
-float fFieldOfView = 3.14159f / 12.0f;
+float fFieldOfView = 3.14159f / 4.0f;
 float fDepth = 16.0f;
 
 
@@ -30,48 +30,66 @@ int main()
 
 	std::wstring map;
 	map += L"################";
+	map += L"#.............##";
+	map += L"#....#.....##..#";
+	map += L"#.........#... #";
+	map += L"#...#.....#... #";
+	map += L"#...#......... #";
+	map += L"#...#......... #";
+	map += L"#...#......... #";
+	map += L"#...#......... #";
+	map += L"#...#......... #";
+	map += L"#...#......... #";
+	map += L"#...#......... #";
 	map += L"#............. #";
-	map += L"#............. #";
-	map += L"#............. #";
-	map += L"#............. #";
-	map += L"#............. #";
-	map += L"#............. #";
-	map += L"#............. #";
-	map += L"#............. #";
-	map += L"#............. #";
-	map += L"#............. #";
-	map += L"#............. #";
-	map += L"#............. #";
-	map += L"#............. #";
+	map += L"#..#.....##... #";
 	map += L"#............. #";
 	map += L"################";
 
+	if (fPlayerPosX < 1.0f)
+	{
+		fPlayerPosX = 1.0f;
+	}
+	if (fPlayerPosX > 14.0f)
+	{
+		fPlayerPosX = 14.0f;
+	}
+	if (fPlayerPosY < 1.0f)
+	{
+		fPlayerPosY = 1.0f;
+	}
+	if (fPlayerPosY > 14.0f)
+	{
+		fPlayerPosY = 14.0f;
+	}
 	while (1)
 	{
+		int nPlayerPosX = static_cast<int>(std::roundf((fPlayerPosX)));
+		int nPlayerPosY = static_cast<int>(std::roundf((fPlayerPosY)));
 		if (GetAsyncKeyState((unsigned short)'A') & 0x8000)
 		{
-			if (fPlayerPosX > 1.0f)
+			if (map[nPlayerPosY * nMapWidth + nPlayerPosX ] != '#')
 			{
 				fPlayerPosX -= 0.02f;
 			}
 		}
 		if (GetAsyncKeyState((unsigned short)'D') & 0x8000)
 		{
-			if (fPlayerPosX < 14.0f)
+			if (map[nPlayerPosY * nMapWidth + nPlayerPosX ] != '#')
 			{
 				fPlayerPosX += 0.02f;
 			}
 		}
 		if (GetAsyncKeyState((unsigned short)'W') & 0x8000)
 		{
-			if (fPlayerPosY > 1.0f)
+			if (map[(nPlayerPosY ) * nMapWidth + nPlayerPosX] != '#')
 			{
 				fPlayerPosY -= 0.02f;
 			}
 		}
 		if (GetAsyncKeyState((unsigned short)'S') & 0x8000)
 		{
-			if (fPlayerPosY < 14.0f)
+			if (map[(nPlayerPosY ) * nMapWidth + nPlayerPosX] != '#')
 			{
 				fPlayerPosY += 0.02f;
 			}
@@ -160,12 +178,9 @@ int main()
 		characterPosInfo += L", Y : ";
 		characterPosInfo += std::to_wstring(fPlayerPosY);
 
-		for (int i = 0; i < (int)characterPosInfo.size(); ++i)
+		for (int i = 20; i < (int)characterPosInfo.size() + 20; ++i)
 		{
-			if (i+20 < std::wcslen(screen))
-			{
-				screen[i + 20] = characterPosInfo[i];
-			}
+			screen[i] = characterPosInfo[i - 20];
 		}
 		screen[nScreenHeight * nScreenWidth - 1] = '\0';
 		WriteConsoleOutputCharacter(hConsole, screen, nScreenWidth * nScreenHeight, { 0,0 }, &dwBytesWritten);
