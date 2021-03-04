@@ -11,8 +11,8 @@ int nAbstractMapHeight = 20;
 int nViewHeight = 40;
 int nScreenHeight = nViewHeight + nAbstractMapHeight;
 
-float fPlayerPosX = 4.0f;
-float fPlayerPosY = 0.0f;
+float fPlayerPosX = 8.0f;
+float fPlayerPosY = 8.0f;
 float fPi = 3.14159f;
 float fPlayerAngle = fPi / 2.0f;
 float fMoveIncrement = 0.009f;
@@ -71,6 +71,10 @@ int main()
 	{
 		fPlayerPosY = 14.0f;
 	}
+	if (fPlayerAngle < 0)
+	{
+		fPlayerAngle += 2 * fPi;
+	}
 	while (1)
 	{
 		int nPlayerPosX = static_cast<int>(std::roundf(fPlayerPosX));
@@ -111,24 +115,22 @@ int main()
 		{
 			fPlayerAngle -= fAngleIncrement;
 		}
-
-
 		for (int x = 0; x < nScreenWidth; x++)
 		{
 			float fRayAngle = (fPlayerAngle + fFieldOfView / 2.0f) - ((float)x / (float)nScreenWidth) * fFieldOfView;
 			float fDistanceToWall = 0.0f;
 			bool bHitWall = false;
 			float fUnitX = cosf(fRayAngle);
-			float fUnitY = -sinf(fRayAngle);
+			float fUnitY = sinf(fRayAngle);
 			while (!bHitWall && fDistanceToWall < fDepth)
 			{
 				fDistanceToWall += 0.1f;
-				int nTestX = static_cast<int>(fPlayerPosX + fUnitX * fDistanceToWall);
-				int nTestY = static_cast<int>(fPlayerPosY + fUnitY * fDistanceToWall);
+				int nTestX = static_cast<int>(std::roundf(fPlayerPosX + fUnitX * fDistanceToWall));
+				int nTestY = static_cast<int>(std::roundf(fPlayerPosY - fUnitY * fDistanceToWall));
 				if (nTestX <= 0 || nTestX >= nMapWidth || nTestY <= 0 || nTestY >= nMapHeight)
 				{
 					bHitWall = true;
-					fDistanceToWall = fDepth;
+					//fDistanceToWall = fDepth;
 				}
 				else
 				{
@@ -140,8 +142,8 @@ int main()
 			}
 			int nCeiling = (int)((float)(nViewHeight) / 2.0f - (float)(nViewHeight) / (fDistanceToWall));
 			int nFloor = nViewHeight - nCeiling;
-			assert(nCeiling > 0);
-			assert(nFloor < nScreenHeight);
+			/*assert(nCeiling > 0);
+			assert(nFloor < nScreenHeight);*/
 			nCeiling += nAbstractMapHeight;
 			nFloor += nAbstractMapHeight;
 			for (int y = 0; y < nScreenHeight; y++)
@@ -176,11 +178,11 @@ int main()
 
 
 				}
-				else if (y > nAbstractMapHeight && y < nCeiling)
+				else if (y >= nAbstractMapHeight && y < nCeiling)
 				{
 					screen[y * nScreenWidth + x] = ' ';
 				}
-				else if (y > nCeiling && y < nFloor)
+				else if (y >= nCeiling && y < nFloor)
 				{
 					screen[y * nScreenWidth + x] = '0';
 				}
