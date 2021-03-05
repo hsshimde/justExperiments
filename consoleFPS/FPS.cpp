@@ -4,6 +4,7 @@
 #include <string>
 #include <cmath>
 #include <cassert>	
+#include <utility>
 
 int nScreenWidth = 120;
 //int nScreenHeight = 40;
@@ -11,8 +12,8 @@ int nAbstractMapHeight = 20;
 int nViewHeight = 40;
 int nScreenHeight = nViewHeight + nAbstractMapHeight;
 
-float fPlayerPosX = 8.0f;
-float fPlayerPosY = 8.0f;
+float fPlayerPosX = 4.0f;
+float fPlayerPosY = 10.0f;
 float fPi = 3.14159f;
 float fPlayerAngle = fPi / 2.0f;
 float fMoveIncrement = 0.009f;
@@ -21,9 +22,9 @@ float fAngleIncrement = 0.001f;
 int nMapHeight = 16;
 int nMapWidth = 16;
 
-int nAngleCircleRadius = 5;
-int nAngleCircleScreenPosX = nMapWidth + 5;
-int nAngleCircleScreenPosY = 10;
+int nAngleCircleRadius = 8;
+int nAngleCircleScreenPosX = 70;
+int nAngleCircleScreenPosY = 8;
 
 float fFieldOfView = fPi / 4.0f;
 float fDepth = 16.0f;
@@ -40,18 +41,18 @@ int main()
 	std::wstring map;
 	map += L"################";
 	map += L"#..............#";
+	map += L"#.....####.....#";
 	map += L"#..............#";
+	map += L"#....#.........#";
+	map += L"#....#.........#";
+	map += L"#....#.........#";
+	map += L"#....#.........#";
+	map += L"#....#.........#";
 	map += L"#..............#";
+	map += L"#..........#...#";
+	map += L"#..........#...#";
 	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
-	map += L"#..............#";
+	map += L"#..###.........#";
 	map += L"#..............#";
 	map += L"################";
 
@@ -137,13 +138,16 @@ int main()
 					if (map[nTestY * nMapWidth + nTestX] == '#')
 					{
 						bHitWall = true;
+						//fDistanceToWall = fDepth;
 					}
 				}
 			}
 			int nCeiling = (int)((float)(nViewHeight) / 2.0f - (float)(nViewHeight) / (fDistanceToWall));
 			int nFloor = nViewHeight - nCeiling;
-			/*assert(nCeiling > 0);
-			assert(nFloor < nScreenHeight);*/
+		/*	std::cout << nCeiling << std::endl;
+			std::cout << fDistanceToWall << std::endl;*/
+			/*assert(nCeiling >= 0);
+			assert(nFloor <= nScreenHeight);*/
 			nCeiling += nAbstractMapHeight;
 			nFloor += nAbstractMapHeight;
 			for (int y = 0; y < nScreenHeight; y++)
@@ -169,6 +173,27 @@ int main()
 						else
 						{
 							screen[y * nScreenWidth + x] = ' ';
+							/*float fAngleMapUnitX = cosf(fRayAngle);
+							float fAngleMapUnitY = (-1)*sinf(fRayAngle);
+							float fRadiusLine = 0.0f;
+							bool bAngleMapOnScreen = false;
+							while (fRadiusLine < static_cast<float>(nAngleCircleRadius))
+							{
+								int nAngleMapX = static_cast<int>(std::roundf(fRadiusLine * fAngleMapUnitX));
+								int nAngleMapY = static_cast<int>(std::roundf(fRadiusLine * fAngleMapUnitY));
+								
+								if (x == nAngleMapX + nAngleCircleScreenPosX && y == nAngleMapY + nAngleCircleScreenPosY)
+								{
+									screen[y * nScreenWidth + x] = '*';
+									bAngleMapOnScreen = true;
+									break;
+								}
+								fRadiusLine += 0.2f;
+							}
+							if (!bAngleMapOnScreen)
+							{
+								screen[y * nScreenWidth + x] = ' ';
+							}*/
 						}
 					}
 					else
