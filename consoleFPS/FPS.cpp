@@ -4,7 +4,6 @@
 #include <string>
 #include <cmath>
 #include <cassert>	
-#include <utility>
 
 int nScreenWidth = 120;
 //int nScreenHeight = 40;
@@ -18,15 +17,18 @@ float fPi = 3.14159f;
 float fPlayerAngle = fPi / 2.0f;
 float fMoveIncrement = 0.009f;
 float fAngleIncrement = 0.001f;
+float fAngleInDegree = std::roundf(fPlayerAngle * 180.0f / fPi);
+int nPlayerAngleInDegree = static_cast<int>(std::round(fAngleInDegree));
 
 int nMapHeight = 16;
 int nMapWidth = 16;
 
-int nAngleCircleRadius = 8;
-int nAngleCircleScreenPosX = 70;
-int nAngleCircleScreenPosY = 8;
+int nAngleMapSize = 6;
+int nAngleMapScreenPosX = 70;
+int nAngleMapScreenPosY = 8;
 
 float fFieldOfView = fPi / 4.0f;
+int nFieldOfView = static_cast<int>(std::roundf(fFieldOfView * 180.0f / fPi));
 float fDepth = 16.0f;
 
 //void DrawAngle(const float& fAngle);
@@ -55,6 +57,9 @@ int main()
 	map += L"#..###.........#";
 	map += L"#..............#";
 	map += L"################";
+
+	
+	assert(nFieldOfView % 45 == 0);
 
 	if (fPlayerPosX < 1.0f)
 	{
@@ -172,28 +177,56 @@ int main()
 						}
 						else
 						{
-							screen[y * nScreenWidth + x] = ' ';
-							/*float fAngleMapUnitX = cosf(fRayAngle);
-							float fAngleMapUnitY = (-1)*sinf(fRayAngle);
-							float fRadiusLine = 0.0f;
-							bool bAngleMapOnScreen = false;
-							while (fRadiusLine < static_cast<float>(nAngleCircleRadius))
+							if (x <= nAngleMapScreenPosX + nAngleMapSize / 2 && x >= nAngleMapScreenPosX - nAngleMapSize / 2 && y <= nAngleMapScreenPosY + nAngleMapSize / 2 && y >= nAngleMapScreenPosY - nAngleMapSize / 2)
 							{
-								int nAngleMapX = static_cast<int>(std::roundf(fRadiusLine * fAngleMapUnitX));
-								int nAngleMapY = static_cast<int>(std::roundf(fRadiusLine * fAngleMapUnitY));
+								/*int nAngleMapStartLine = nPlayerAngleInDegree / 45;
+								if (nPlayerAngleInDegree % 45 > 22)
+								{
+									nAngleMapStartLine++;
+								}
+								nAngleMapStartLine %= 8;
+								int nAngleMapEndLine = nAngleMapStartLine + nFieldOfView / 45;
+								nAngleMapEndLine %= 8;
+								float fPropertyX = static_cast<float>(x - nAngleMapScreenPosX);
+								float fPropertyY = static_cast<float>((y - nAngleMapScreenPosY)*(-1));
+								float fTriRatio = fPropertyY / fPropertyX;
+								float fTheta = atanf(fTriRatio);
+								if (fPropertyX < 0 && fPropertyY >= 0)
+								{
+									fTheta += fPi;
+								}
+								else if (fPropertyX >= 0 && fPropertyY < 0)
+								{
+									fTheta += fPi;
+								}
+								else if (fPropertyX < 0 && fPropertyY < 0)
+								{
+									fTheta += 2 * fPi;
+								}
+								int nThetaInDegree = static_cast<int>(std::roundf(fTheta * 180.0f / fPi));
+								if (nThetaInDegree < 0)
+								{
+									nThetaInDegree += 360;
+								}
+								if (nThetaInDegree > 360)
+								{
+									nThetaInDegree %= 360;
+								}
 								
-								if (x == nAngleMapX + nAngleCircleScreenPosX && y == nAngleMapY + nAngleCircleScreenPosY)
+								if (nThetaInDegree / 45 >= nAngleMapStartLine && nThetaInDegree / 45 <= nAngleMapEndLine)
 								{
 									screen[y * nScreenWidth + x] = '*';
-									bAngleMapOnScreen = true;
-									break;
 								}
-								fRadiusLine += 0.2f;
+								else
+								{
+									screen[y * nScreenWidth + x] = ' ';
+								}*/
+								screen[y * nScreenWidth + x] = '*';
 							}
-							if (!bAngleMapOnScreen)
+							else
 							{
 								screen[y * nScreenWidth + x] = ' ';
-							}*/
+							}
 						}
 					}
 					else
@@ -223,14 +256,14 @@ int main()
 		playerPosInfo += L", Y : ";
 		playerPosInfo += std::to_wstring(fPlayerPosY);
 		playerPosInfo += L", Angle : ";
-		float fAngleInDegree = std::roundf(fPlayerAngle * 180.0f / fPi);
-		int nAngleInDegree = static_cast<int>(std::round(fAngleInDegree));
-		if (nAngleInDegree < 0)
+		fAngleInDegree = std::roundf(fPlayerAngle * 180.0f / fPi);
+		nPlayerAngleInDegree = static_cast<int>(fAngleInDegree);
+		if (nPlayerAngleInDegree < 0)
 		{
-			nAngleInDegree = 360 + nAngleInDegree;
+			nPlayerAngleInDegree = 360 + nPlayerAngleInDegree;
 		}
-		nAngleInDegree = nAngleInDegree % 360;
-		playerPosInfo += std::to_wstring(nAngleInDegree);
+		nPlayerAngleInDegree = nPlayerAngleInDegree % 360;
+		playerPosInfo += std::to_wstring(nPlayerAngleInDegree);
 		playerPosInfo += L" deg";
 
 		for (size_t i = 0; i < playerPosInfo.size(); i++)
