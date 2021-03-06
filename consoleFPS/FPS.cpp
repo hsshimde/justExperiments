@@ -5,31 +5,31 @@
 #include <cmath>
 #include <cassert>	
 
-int nScreenWidth = 120;
+const int nScreenWidth = 120;
 //int nScreenHeight = 40;
-int nAbstractMapHeight = 20;
-int nViewHeight = 40;
-int nScreenHeight = nViewHeight + nAbstractMapHeight;
+const int nAbstractMapHeight = 20;
+const int nViewHeight = 40;
+const int nScreenHeight = nViewHeight + nAbstractMapHeight;
+const float fPi = 3.14159f;
 
 float fPlayerPosX = 4.0f;
 float fPlayerPosY = 10.0f;
-float fPi = 3.14159f;
 float fPlayerAngle = fPi / 2.0f;
 float fMoveIncrement = 0.009f;
 float fAngleIncrement = 0.001f;
 float fAngleInDegree = std::roundf(fPlayerAngle * 180.0f / fPi);
 int nPlayerAngleInDegree = static_cast<int>(std::round(fAngleInDegree));
 
-int nMapHeight = 16;
-int nMapWidth = 16;
+const int nMapHeight = 16;
+const int nMapWidth = 16;
 
-int nAngleMapSize = 6;
-int nAngleMapScreenPosX = 70;
-int nAngleMapScreenPosY = 8;
+const int nAngleMapSize = 6;
+const int nAngleMapScreenPosX = 70;
+const int nAngleMapScreenPosY = 8;
 
-float fFieldOfView = fPi / 4.0f;
-int nFieldOfView = static_cast<int>(std::roundf(fFieldOfView * 180.0f / fPi));
-float fDepth = 16.0f;
+const float fFieldOfView = fPi / 4.0f;
+const int nFieldOfView = static_cast<int>(std::roundf(fFieldOfView * 180.0f / fPi));
+const float fDepth = 16.0f;
 
 //void DrawAngle(const float& fAngle);
 
@@ -45,16 +45,16 @@ int main()
 	map += L"#..............#";
 	map += L"#.....####.....#";
 	map += L"#..............#";
-	map += L"#....#.........#";
-	map += L"#....#.........#";
-	map += L"#....#.........#";
-	map += L"#....#.........#";
-	map += L"#....#.........#";
 	map += L"#..............#";
-	map += L"#..........#...#";
-	map += L"#..........#...#";
 	map += L"#..............#";
-	map += L"#..###.........#";
+	map += L"#..............#";
+	map += L"#..............#";
+	map += L"#..............#";
+	map += L"#..............#";
+	map += L"#..............#";
+	map += L"#..............#";
+	map += L"#..............#";
+	map += L"#..............#";
 	map += L"#..............#";
 	map += L"################";
 
@@ -179,48 +179,7 @@ int main()
 						{
 							if (x <= nAngleMapScreenPosX + nAngleMapSize / 2 && x >= nAngleMapScreenPosX - nAngleMapSize / 2 && y <= nAngleMapScreenPosY + nAngleMapSize / 2 && y >= nAngleMapScreenPosY - nAngleMapSize / 2)
 							{
-								/*int nAngleMapStartLine = nPlayerAngleInDegree / 45;
-								if (nPlayerAngleInDegree % 45 > 22)
-								{
-									nAngleMapStartLine++;
-								}
-								nAngleMapStartLine %= 8;
-								int nAngleMapEndLine = nAngleMapStartLine + nFieldOfView / 45;
-								nAngleMapEndLine %= 8;
-								float fPropertyX = static_cast<float>(x - nAngleMapScreenPosX);
-								float fPropertyY = static_cast<float>((y - nAngleMapScreenPosY)*(-1));
-								float fTriRatio = fPropertyY / fPropertyX;
-								float fTheta = atanf(fTriRatio);
-								if (fPropertyX < 0 && fPropertyY >= 0)
-								{
-									fTheta += fPi;
-								}
-								else if (fPropertyX >= 0 && fPropertyY < 0)
-								{
-									fTheta += fPi;
-								}
-								else if (fPropertyX < 0 && fPropertyY < 0)
-								{
-									fTheta += 2 * fPi;
-								}
-								int nThetaInDegree = static_cast<int>(std::roundf(fTheta * 180.0f / fPi));
-								if (nThetaInDegree < 0)
-								{
-									nThetaInDegree += 360;
-								}
-								if (nThetaInDegree > 360)
-								{
-									nThetaInDegree %= 360;
-								}
 								
-								if (nThetaInDegree / 45 >= nAngleMapStartLine && nThetaInDegree / 45 <= nAngleMapEndLine)
-								{
-									screen[y * nScreenWidth + x] = '*';
-								}
-								else
-								{
-									screen[y * nScreenWidth + x] = ' ';
-								}*/
 								screen[y * nScreenWidth + x] = '*';
 							}
 							else
