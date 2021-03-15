@@ -18,5 +18,8 @@
     <ClCompile Include="PrimeNumber.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PrimeNumberWithoutMultiThreading.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
