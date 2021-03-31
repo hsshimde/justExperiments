@@ -38,14 +38,18 @@ void Vector3D::Divide(float value)
 	return;
 }
 
-void Vector3D::Normalize()
+void Vector3D::Normalize() 
 {
 	float length = GetSize();
-	//assert(length != 0.0f);
-	if (length != 1.00f)
+	assert(length != 0.0f);
+	/*if (length != 1.00f)
 	{
 		Divide(length);
-	}
+	}*/
+	
+	mfX /= length;
+	mfY /= length;
+	mfZ /= length;
 	return;
 }
 
@@ -98,6 +102,28 @@ Vector3D Vector3D::operator*(float value) const
 	result.mfY = mfY * value;
 	result.mfZ = mfZ * value;
 	return result;
+}
+Vector3D Vector3D::operator/(float value) const
+{
+	Vector3D result;
+	result.mfX /= value;
+	result.mfY /= value;
+	result.mfZ /= value;
+	return result;
+}
+void Vector3D::operator+=(const Vector3D& rhs)
+{
+	mfX += rhs.mfX;
+	mfY += rhs.mfY;
+	mfZ += rhs.mfZ;
+	//mfX += rhs.mfX;
+}
+void Vector3D::operator-=(const Vector3D& rhs)
+{
+	mfX -= rhs.mfX;
+	mfY -= rhs.mfY;
+	mfZ -= rhs.mfZ;
+	//mfX -= rhs.mfX;
 }
 Vector3D Vector3D::MultiplyMatrix(const Matrix4D& mat) const
 {
