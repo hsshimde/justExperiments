@@ -49,7 +49,11 @@ private:
 	float mnScreenOffset;
 	float mfYCameraAxisRotate;
 	Vector3D mvCamera;
-	Vector3D mvLookDirection;
+	const Vector3D mvLookDirection;
+
+	Matrix4D mMLeftRecRotate;
+	Matrix4D mMRightRecRotate;
+
 	eastl::queue<Triangle*> mTriangleMemoryPool;
 
 };
@@ -240,8 +244,8 @@ Matrix4D TaeDdangGraphicEngine::GetRotateMatrixY(const float theta) const
 {
 	Matrix4D result;
 	result.m[0][0] = std::cosf(theta);
-	result.m[0][2] = std::sinf(theta);
-	result.m[2][0] = -std::sinf(theta);
+	result.m[0][2] = -std::sinf(theta);
+	result.m[2][0] = std::sinf(theta);
 	result.m[2][2] = std::cosf(theta);
 	result.m[1][1] = 1.0f;
 	result.m[3][3] = 1.0f;
@@ -460,6 +464,10 @@ inline bool TaeDdangGraphicEngine::OnUserCreate()
 	//initiateFromFile("teapot.obj");
 	mvCamera.mfZ = -2.0f;
 	//mfTheta = 3.14159f;
+	const float fPi = 3.141592f;
+	mMLeftRecRotate = GetRotateMatrixY(fPi / 2.0f);
+	mMRightRecRotate = GetRotateMatrixY(-fPi / 2.0f);
+	//mMRightRecRotate = GetRotateMatrixX(-fPi / 2.0f);
 
 	return true;
 }
@@ -473,7 +481,7 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 
 	Matrix4D MRotateForCameraLookDirection = GetRotateMatrixY(mfYCameraAxisRotate);
 	Vector3D vRotatedLookDirection = mvLookDirection.MultiplyMatrix(MRotateForCameraLookDirection);
-
+	//assert(vRotatedLookDirection.GetSize() == 1.0f);
 	//Vector3D unitVector
 	if (GetKey(VK_UP).bHeld)
 	{
@@ -506,11 +514,25 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 	{
 		mvCamera += vRotatedLookDirection * fVerticalMoveSpeed * fElapsedTime;
 	}
-
 	if (GetKey(L'S').bHeld)
 	{
 		mvCamera -= vRotatedLookDirection * fVerticalMoveSpeed * fElapsedTime;
 	}
+	if (GetKey(L'A').bHeld)
+	{
+		//mvCamera -= vRotatedLookDirection * fVerticalMoveSpeed * fElapsedTime;
+		Vector3D vMoveDirection = vRotatedLookDirection.MultiplyMatrix(mMLeftRecRotate);
+		vMoveDirection.Normalize();
+		mvCamera += vMoveDirection * fElapsedTime * fVerticalMoveSpeed;
+	}
+	if (GetKey(L'D').bHeld)
+	{
+		//mvCamera -= vRotatedLookDirection * fVerticalMoveSpeed * fElapsedTime;
+		Vector3D vMoveDirection = vRotatedLookDirection.MultiplyMatrix(mMRightRecRotate);
+		vMoveDirection.Normalize();
+		mvCamera += vMoveDirection * fElapsedTime * fVerticalMoveSpeed;
+	}
+
 
 
 	Fill(0, 0, ScreenWidth(), ScreenHeight(), PIXEL_SOLID, FG_BLACK);
