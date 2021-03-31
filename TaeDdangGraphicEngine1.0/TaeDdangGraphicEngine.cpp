@@ -491,12 +491,12 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 	{
 		mvCamera.mfX += fVerticalMoveSpeed* fElapsedTime;
 	}
-	if (GetKey(L'A').bHeld)
+	if (GetKey(L'J').bHeld)
 	{
 		mfYCameraAxisRotate -= fAngularMoveSpeed * fElapsedTime;
 		//mfTheta -= fAngularMoveSpeed * fElapsedTime;
 	}
-	if (GetKey(L'D').bHeld)
+	if (GetKey(L'L').bHeld)
 	{
 		mfYCameraAxisRotate += fAngularMoveSpeed * fElapsedTime;
 		//mfTheta += fAngularMoveSpeed * fElapsedTime;
