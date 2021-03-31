@@ -93,7 +93,8 @@ TaeDdangGraphicEngine::TaeDdangGraphicEngine()
 	, mfTheta(0.0f)
 	, mnScreenOffset(0.0f)
 	, mvCamera()
-	, mfYCameraAxisRotate{}
+	, mfYCameraAxisRotate{0.0f}
+	, mvLookDirection{0.0f, 0.0f, 1.0f}
 {
 
 }
@@ -468,8 +469,10 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 	const float fVerticalMoveSpeed = 8.0f;
 	const float fHorizantalMoveSpeed = 8.0f;
 	static const float fPi = 3.141592f;
+	const float fAngularMoveSpeed = 2.0f * fPi / 3.0f;
 
-	const float fAngularMoveSpeed = 2.0f * fPi / 10.0f;
+	Matrix4D MRotateForCameraLookDirection = GetRotateMatrixY(mfYCameraAxisRotate);
+	Vector3D vRotatedLookDirection = mvLookDirection.MultiplyMatrix(MRotateForCameraLookDirection);
 
 	//Vector3D unitVector
 	if (GetKey(VK_UP).bHeld)
@@ -491,20 +494,22 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 	if (GetKey(L'A').bHeld)
 	{
 		mfYCameraAxisRotate -= fAngularMoveSpeed * fElapsedTime;
+		//mfTheta -= fAngularMoveSpeed * fElapsedTime;
 	}
 	if (GetKey(L'D').bHeld)
 	{
 		mfYCameraAxisRotate += fAngularMoveSpeed * fElapsedTime;
+		//mfTheta += fAngularMoveSpeed * fElapsedTime;
 	}
 
 	if (GetKey(L'W').bHeld)
 	{
-		mvCamera.mfZ += fVerticalMoveSpeed * fElapsedTime;
+		mvCamera += vRotatedLookDirection * fVerticalMoveSpeed * fElapsedTime;
 	}
 
 	if (GetKey(L'S').bHeld)
 	{
-		mvCamera.mfZ -= fVerticalMoveSpeed * fElapsedTime;
+		mvCamera -= vRotatedLookDirection * fVerticalMoveSpeed * fElapsedTime;
 	}
 
 
@@ -516,14 +521,23 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 	//Matrix4D rotateX = GetRotateMatrixX(mfTheta);
 	//Matrix4D mtCameraRotateY = GetRotateMatrixY(mfYCameraAxisRotate);
 	//Matrix4D rotateZ = GetRotateMatrixZ(mfTheta);
-	Matrix4D rotateY = GetRotateMatrixY(mfYCameraAxisRotate);
 	//mvCamera = mvCamera.MultiplyMatrix(mtCameraRotateY);
+	
+	//mvCamera = mvCamera.MultiplyMatrix(rotateForCamera);
+	//float fCameraVectorSize = mvCamera.GetSize();
+	/*mvLookDirection = mvCamera;
+	mvLookDirection.mfX = mvCamera.mfX / fCameraVectorSize;
+	mvLookDirection.mfY = mvCamera.mfY / fCameraVectorSize;
+	mvLookDirection.mfZ = mvCamera.mfZ / fCameraVectorSize;*/
 
-	mvLookDirection = { 0.0f, 0.0f, 1.0f };
+	
+
 	Vector3D vUp = { 0.0f, 1.0f, 0.0f };
-	Vector3D vTarget = mvCamera + mvLookDirection;
+	Vector3D vTarget = mvCamera + vRotatedLookDirection;
+
 	assert(mvCamera.mfW == 1.0f);
-	Matrix4D cameraMatrix = GetPointAtMatrix(mvCamera, vTarget, vUp);
+	Matrix4D cameraMatrix = GetPointAtMatrix(mvCamera, vTarget, vUp); //assert here!! Look what the problem is !!!
+	Matrix4D rotateY = GetRotateMatrixY(mfTheta);
 	Matrix4D viewMatrix = GetInverseMatrix(cameraMatrix);
 
 	for (const auto& originalTriangle : mMesh.triangles)
@@ -565,7 +579,7 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 
 		if (rayAndNormalDotProduct < 0.0f)
 		{
-			Vector3D lightDirection = Vector3D{} - rayFromCameraToPlane;
+			Vector3D lightDirection = Vector3D{} - mvLookDirection;
 			lightDirection.Normalize();
 			float lightAndNormalDotProduct = lightDirection.GetDotProduct(normalVector);
 			CHAR_INFO color = GetColour(lightAndNormalDotProduct);
