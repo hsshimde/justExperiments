@@ -97,8 +97,8 @@ TaeDdangGraphicEngine::TaeDdangGraphicEngine()
 	, mfTheta(0.0f)
 	, mnScreenOffset(0.0f)
 	, mvCamera()
-	, mfYCameraAxisRotate{0.0f}
-	, mvLookDirection{0.0f, 0.0f, 1.0f}
+	, mfYCameraAxisRotate{ 0.0f }
+	, mvLookDirection{ 0.0f, 0.0f, 1.0f }
 {
 
 }
@@ -327,9 +327,9 @@ Matrix4D TaeDdangGraphicEngine::GetPointAtMatrix(const Vector3D& position, const
 	pointAtMatrix.m[2][2] = newForward.mfZ;
 	pointAtMatrix.m[3][2] = 0.0f;
 
-	pointAtMatrix.m[0][3] = position.mfX;			
-	pointAtMatrix.m[1][3] = position.mfY;		
-	pointAtMatrix.m[2][3] = position.mfZ;		
+	pointAtMatrix.m[0][3] = position.mfX;
+	pointAtMatrix.m[1][3] = position.mfY;
+	pointAtMatrix.m[2][3] = position.mfZ;
 	pointAtMatrix.m[3][3] = 1.0f;
 
 	return pointAtMatrix;
@@ -497,17 +497,15 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 	}
 	if (GetKey(VK_RIGHT).bHeld)
 	{
-		mvCamera.mfX += fVerticalMoveSpeed* fElapsedTime;
+		mvCamera.mfX += fVerticalMoveSpeed * fElapsedTime;
 	}
 	if (GetKey(L'J').bHeld)
 	{
 		mfYCameraAxisRotate -= fAngularMoveSpeed * fElapsedTime;
-		//mfTheta -= fAngularMoveSpeed * fElapsedTime;
 	}
 	if (GetKey(L'L').bHeld)
 	{
 		mfYCameraAxisRotate += fAngularMoveSpeed * fElapsedTime;
-		//mfTheta += fAngularMoveSpeed * fElapsedTime;
 	}
 
 	if (GetKey(L'W').bHeld)
@@ -520,7 +518,6 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 	}
 	if (GetKey(L'A').bHeld)
 	{
-		//mvCamera -= vRotatedLookDirection * fVerticalMoveSpeed * fElapsedTime;
 		Vector3D vMoveDirection = vRotatedLookDirection.MultiplyMatrix(mMLeftRecRotate);
 		vMoveDirection.Normalize();
 		mvCamera += vMoveDirection * fElapsedTime * fVerticalMoveSpeed;
@@ -536,28 +533,14 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 
 
 	Fill(0, 0, ScreenWidth(), ScreenHeight(), PIXEL_SOLID, FG_BLACK);
-	//mfTheta = mfYaw;
-	
+
 	eastl::vector<Triangle*> mapTrianlgesToRasterize{};
-
-	//Matrix4D rotateX = GetRotateMatrixX(mfTheta);
-	//Matrix4D mtCameraRotateY = GetRotateMatrixY(mfYCameraAxisRotate);
-	//Matrix4D rotateZ = GetRotateMatrixZ(mfTheta);
-	//mvCamera = mvCamera.MultiplyMatrix(mtCameraRotateY);
-	
-	//mvCamera = mvCamera.MultiplyMatrix(rotateForCamera);
-	//float fCameraVectorSize = mvCamera.GetSize();
-	/*mvLookDirection = mvCamera;
-	mvLookDirection.mfX = mvCamera.mfX / fCameraVectorSize;
-	mvLookDirection.mfY = mvCamera.mfY / fCameraVectorSize;
-	mvLookDirection.mfZ = mvCamera.mfZ / fCameraVectorSize;*/
-
-	
 
 	Vector3D vUp = { 0.0f, 1.0f, 0.0f };
 	Vector3D vTarget = mvCamera + vRotatedLookDirection;
 
 	assert(mvCamera.mfW == 1.0f);
+
 	Matrix4D cameraMatrix = GetPointAtMatrix(mvCamera, vTarget, vUp); //assert here!! Look what the problem is !!!
 	Matrix4D rotateY = GetRotateMatrixY(mfTheta);
 	Matrix4D viewMatrix = GetInverseMatrix(cameraMatrix);
@@ -566,10 +549,10 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 	{
 		assert(!mTriangleMemoryPool.empty());
 		Triangle* translatedTriangle = mTriangleMemoryPool.front();
-		
+
 		Triangle*& viewedTriangle = translatedTriangle;
 		mTriangleMemoryPool.pop();
-		
+
 		TranslateTriangle(*translatedTriangle, originalTriangle, rotateY);
 		TranslateTriangle(*viewedTriangle, *translatedTriangle, viewMatrix);
 
@@ -592,16 +575,15 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 		{
 			normalVector.Normalize();
 		}
-
 		//Vector3D rayFromCameraAtPlane = viewedTriangle->Point[0] - mvCamera;
 		//Vector3D centroidVector = (viewedTriangle->Point[0] + viewedTriangle->Point[1] + viewedTriangle->Point[2]) / 3.0f;
 		//Vector3D rayFromCameraToPlane = centroidVector - mvCamera;
 		Vector3D rayFromCameraToPlane = viewedTriangle->Point[0] - mvCamera;
+		
 		float rayAndNormalDotProduct = rayFromCameraToPlane.GetDotProduct(normalVector);
-
 		if (rayAndNormalDotProduct < 0.0f)
 		{
-			Vector3D lightDirection = Vector3D{} - mvLookDirection;
+			Vector3D lightDirection = (/*mvCamera +*/ vRotatedLookDirection) * -1.0f;
 			lightDirection.Normalize();
 			float lightAndNormalDotProduct = lightDirection.GetDotProduct(normalVector);
 			CHAR_INFO color = GetColour(lightAndNormalDotProduct);
@@ -616,13 +598,13 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 	}
 	eastl::quick_sort(begin(mapTrianlgesToRasterize), end(mapTrianlgesToRasterize), CompareZCoordinate());
 	size_t trianglesCount = mapTrianlgesToRasterize.size();
-
 	for (size_t i = 0; i < trianglesCount; ++i)
 	{
 		Triangle* triangleToDraw = mapTrianlgesToRasterize[i];
 		Matrix4D projectMatrix = GetProjectionMatrix(0.1f, 1000.0f, 3.14159f / 2.0f, ScreenHeight(), ScreenWidth());
 		ProjectTriangle(triangleToDraw, projectMatrix);
 
+		
 
 		triangleToDraw->Point[0].mfX += 1.0f;
 		triangleToDraw->Point[0].mfY += 1.0f;
