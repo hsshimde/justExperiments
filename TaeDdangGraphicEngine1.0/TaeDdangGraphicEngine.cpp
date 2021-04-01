@@ -38,9 +38,10 @@ private:
 	Matrix4D GetRotateMatrixY(const float theta) const;
 	Matrix4D GetRotateMatrixZ(const float theta) const;
 	Matrix4D GetIdentityMatrix() const;
-
-
 	Matrix4D GetProjectionMatrix(float fNear, float fFar, float fFOV, int nScreenHeight, int nScreenWidth);
+
+	int ClipTriangleAgainstPlane(const Vector3D& normal, const Vector3D& point, const Triangle* in, const Triangle* out1, const Triangle* out2);
+	float GetPlaneEquationValue(const Vector3D& target, const Vector3D& normal, const Vector3D& point);
 
 
 private:
@@ -50,6 +51,11 @@ private:
 	float mfYCameraAxisRotate;
 	Vector3D mvCamera;
 	const Vector3D mvLookDirection;
+
+	const float mfVerticalMoveSpeed = 8.0f;
+	const float mfHorizantalMoveSpeed = 8.0f;
+	static const float fPi;
+	const float mfAngularMoveSpeed = 2.0f * fPi / 3.0f;
 
 	Matrix4D mMLeftRecRotate;
 	Matrix4D mMRightRecRotate;
@@ -102,6 +108,8 @@ TaeDdangGraphicEngine::TaeDdangGraphicEngine()
 {
 
 }
+
+const float TaeDdangGraphicEngine::fPi = 3.141592f;
 
 bool TaeDdangGraphicEngine::initiateFromFile(const char* fileName)
 {
@@ -433,6 +441,23 @@ Matrix4D TaeDdangGraphicEngine::GetProjectionMatrix(float fNear, float fFar, flo
 	return projectionMatrix;
 }
 
+int TaeDdangGraphicEngine::ClipTriangleAgainstPlane(const Vector3D& normal, const Vector3D& point, const Triangle* in, const Triangle* out1, const Triangle* out2)
+{
+	
+		
+	return 0;
+}
+
+float TaeDdangGraphicEngine::GetPlaneEquationValue(const Vector3D& target, const Vector3D& normal, const Vector3D& passingPoint)
+{
+	float value = 0.0f;
+	value += normal.mfX * (target.mfX - passingPoint.mfX);
+	value += normal.mfY * (target.mfY - passingPoint.mfY);
+	value += normal.mfZ * (target.mfZ - passingPoint.mfZ);
+	return value;
+}
+
+
 void TaeDdangGraphicEngine::TranslateTriangle(Triangle& out, const Triangle& in, const Matrix4D& mat) const
 {
 	out.Point[0] = in.Point[0].MultiplyMatrix(mat);
@@ -474,10 +499,10 @@ inline bool TaeDdangGraphicEngine::OnUserCreate()
 
 bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 {
-	const float fVerticalMoveSpeed = 8.0f;
+	/*const float fVerticalMoveSpeed = 8.0f;
 	const float fHorizantalMoveSpeed = 8.0f;
 	static const float fPi = 3.141592f;
-	const float fAngularMoveSpeed = 2.0f * fPi / 3.0f;
+	const float fAngularMoveSpeed = 2.0f * fPi / 3.0f;*/
 
 	Matrix4D MRotateForCameraLookDirection = GetRotateMatrixY(mfYCameraAxisRotate);
 	Vector3D vRotatedLookDirection = mvLookDirection.MultiplyMatrix(MRotateForCameraLookDirection);
@@ -485,49 +510,49 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 	//Vector3D unitVector
 	if (GetKey(VK_UP).bHeld)
 	{
-		mvCamera.mfY -= fHorizantalMoveSpeed * fElapsedTime;
+		mvCamera.mfY -= mfHorizantalMoveSpeed * fElapsedTime;
 	}
 	if (GetKey(VK_DOWN).bHeld)
 	{
-		mvCamera.mfY += fHorizantalMoveSpeed * fElapsedTime;
+		mvCamera.mfY += mfHorizantalMoveSpeed * fElapsedTime;
 	}
 	if (GetKey(VK_LEFT).bHeld)
 	{
-		mvCamera.mfX -= fVerticalMoveSpeed * fElapsedTime;
+		mvCamera.mfX -= mfVerticalMoveSpeed * fElapsedTime;
 	}
 	if (GetKey(VK_RIGHT).bHeld)
 	{
-		mvCamera.mfX += fVerticalMoveSpeed * fElapsedTime;
+		mvCamera.mfX += mfVerticalMoveSpeed * fElapsedTime;
 	}
 	if (GetKey(L'J').bHeld)
 	{
-		mfYCameraAxisRotate -= fAngularMoveSpeed * fElapsedTime;
+		mfYCameraAxisRotate -= mfAngularMoveSpeed * fElapsedTime;
 	}
 	if (GetKey(L'L').bHeld)
 	{
-		mfYCameraAxisRotate += fAngularMoveSpeed * fElapsedTime;
+		mfYCameraAxisRotate += mfAngularMoveSpeed * fElapsedTime;
 	}
 
 	if (GetKey(L'W').bHeld)
 	{
-		mvCamera += vRotatedLookDirection * fVerticalMoveSpeed * fElapsedTime;
+		mvCamera += vRotatedLookDirection * mfVerticalMoveSpeed * fElapsedTime;
 	}
 	if (GetKey(L'S').bHeld)
 	{
-		mvCamera -= vRotatedLookDirection * fVerticalMoveSpeed * fElapsedTime;
+		mvCamera -= vRotatedLookDirection * mfVerticalMoveSpeed * fElapsedTime;
 	}
 	if (GetKey(L'A').bHeld)
 	{
 		Vector3D vMoveDirection = vRotatedLookDirection.MultiplyMatrix(mMLeftRecRotate);
 		vMoveDirection.Normalize();
-		mvCamera += vMoveDirection * fElapsedTime * fVerticalMoveSpeed;
+		mvCamera += vMoveDirection * fElapsedTime * mfVerticalMoveSpeed;
 	}
 	if (GetKey(L'D').bHeld)
 	{
 		//mvCamera -= vRotatedLookDirection * fVerticalMoveSpeed * fElapsedTime;
 		Vector3D vMoveDirection = vRotatedLookDirection.MultiplyMatrix(mMRightRecRotate);
 		vMoveDirection.Normalize();
-		mvCamera += vMoveDirection * fElapsedTime * fVerticalMoveSpeed;
+		mvCamera += vMoveDirection * fElapsedTime * mfVerticalMoveSpeed;
 	}
 
 
@@ -547,21 +572,21 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 
 	for (const auto& originalTriangle : mMesh.triangles)
 	{
-		assert(!mTriangleMemoryPool.empty());
+		//assert(!mTriangleMemoryPool.empty());
 		Triangle* translatedTriangle = mTriangleMemoryPool.front();
-
 		Triangle*& viewedTriangle = translatedTriangle;
 		mTriangleMemoryPool.pop();
 
+
 		TranslateTriangle(*translatedTriangle, originalTriangle, rotateY);
-		TranslateTriangle(*viewedTriangle, *translatedTriangle, viewMatrix);
+		//TranslateTriangle(*viewedTriangle, *translatedTriangle, viewMatrix);
 
-		viewedTriangle->Point[0].AddScreenOffset(mnScreenOffset);
-		viewedTriangle->Point[1].AddScreenOffset(mnScreenOffset);
-		viewedTriangle->Point[2].AddScreenOffset(mnScreenOffset);
+		/*translatedTriangle->Point[0].AddScreenOffset(mnScreenOffset);
+		translatedTriangle->Point[1].AddScreenOffset(mnScreenOffset);
+		translatedTriangle->Point[2].AddScreenOffset(mnScreenOffset);*/
 
-		Vector3D firstVectorOnPlane = viewedTriangle->Point[1] - viewedTriangle->Point[0];
-		Vector3D secondVectorOnPlane = viewedTriangle->Point[2] - viewedTriangle->Point[1];
+		Vector3D firstVectorOnPlane = translatedTriangle->Point[1] - translatedTriangle->Point[0];
+		Vector3D secondVectorOnPlane = translatedTriangle->Point[2] - translatedTriangle->Point[1];
 		Vector3D normalVector = firstVectorOnPlane.GetCrossProduct(secondVectorOnPlane);
 
 		float normalVectorSize = normalVector.GetSize();
@@ -575,25 +600,41 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 		{
 			normalVector.Normalize();
 		}
+		//Vector3D rayFromCameraToPlane = centroidVector - mvCamera;
 		//Vector3D rayFromCameraAtPlane = viewedTriangle->Point[0] - mvCamera;
 		//Vector3D centroidVector = (viewedTriangle->Point[0] + viewedTriangle->Point[1] + viewedTriangle->Point[2]) / 3.0f;
-		//Vector3D rayFromCameraToPlane = centroidVector - mvCamera;
-		Vector3D rayFromCameraToPlane = viewedTriangle->Point[0] - mvCamera;
-		
+
+		Vector3D rayFromCameraToPlane = translatedTriangle->Point[0] - mvCamera;
 		float rayAndNormalDotProduct = rayFromCameraToPlane.GetDotProduct(normalVector);
+
 		if (rayAndNormalDotProduct < 0.0f)
 		{
-			Vector3D lightDirection = (/*mvCamera +*/ vRotatedLookDirection) * -1.0f;
+			//Vector3D lightDirection = (/*mvCamera +*/ vRotatedLookDirection) * -1.0f;
+			Vector3D lightDirection = { 0.0f, 1.0f, -1.0f };
 			lightDirection.Normalize();
+
 			float lightAndNormalDotProduct = lightDirection.GetDotProduct(normalVector);
+			lightAndNormalDotProduct = (lightAndNormalDotProduct < 0.1) ? 0.1 : lightAndNormalDotProduct;
+
 			CHAR_INFO color = GetColour(lightAndNormalDotProduct);
-			viewedTriangle->color = color.Attributes;
-			viewedTriangle->symbol = color.Char.UnicodeChar;
-			mapTrianlgesToRasterize.push_back(viewedTriangle);
+			translatedTriangle->color = color.Attributes;
+			translatedTriangle->symbol = color.Char.UnicodeChar;
+
+			Triangle*& viewedTriangle = translatedTriangle;
+			viewedTriangle->Point[0] = translatedTriangle->Point[0].MultiplyMatrix(viewMatrix);
+			viewedTriangle->Point[1] = translatedTriangle->Point[1].MultiplyMatrix(viewMatrix);
+			viewedTriangle->Point[2] = translatedTriangle->Point[2].MultiplyMatrix(viewMatrix);
+
+			size_t nNumberOfClippedTriangle = 0;
+			Triangle* pClippedTriangle[2];
+			
+			
+
+				mapTrianlgesToRasterize.push_back(translatedTriangle);
 		}
 		else
 		{
-			mTriangleMemoryPool.push(viewedTriangle);
+			mTriangleMemoryPool.push(translatedTriangle);
 		}
 	}
 	eastl::quick_sort(begin(mapTrianlgesToRasterize), end(mapTrianlgesToRasterize), CompareZCoordinate());
@@ -604,7 +645,7 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 		Matrix4D projectMatrix = GetProjectionMatrix(0.1f, 1000.0f, 3.14159f / 2.0f, ScreenHeight(), ScreenWidth());
 		ProjectTriangle(triangleToDraw, projectMatrix);
 
-		
+
 
 		triangleToDraw->Point[0].mfX += 1.0f;
 		triangleToDraw->Point[0].mfY += 1.0f;
@@ -659,6 +700,8 @@ bool TaeDdangGraphicEngine::OnUserDestroy()
 	}
 	return true;
 }
+
+
 
 
 int main()

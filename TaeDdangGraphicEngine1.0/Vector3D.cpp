@@ -143,6 +143,21 @@ void Vector3D::AddScreenOffset(const float offset)
 	mfZ += offset;
 	return;
 }
+float Vector3D::GetPlaneEquationValue(const Vector3D& normal, const Vector3D& passingPoint) const
+{
+	float value = 0.0f;
+	value += normal.mfX * (mfX - passingPoint.mfX);
+	value += normal.mfY * (mfY - passingPoint.mfY);
+	value += normal.mfZ * (mfZ - passingPoint.mfZ);
+	return value;
+	//return 0.0f;
+}
+Vector3D Vector3D::GetIntersectPlaneVector(const Vector3D& normal, const Vector3D& passingPoint, const Vector3D& endPoint) const
+{
+	Vector3D lineDirectionUnit = endPoint - *this;
+	lineDirectionUnit.Normalize();
+	lineDirectionUnit.GetPlaneEquationValue()
+}
 //Vector3D Vector3D::MultiplyMatrix(const Matrix4D& mat) const
 //{
 //	float vectorElement[3];
