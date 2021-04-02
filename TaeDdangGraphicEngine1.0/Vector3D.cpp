@@ -156,7 +156,13 @@ Vector3D Vector3D::GetIntersectPlaneVector(const Vector3D& normal, const Vector3
 {
 	Vector3D lineDirectionUnit = endPoint - *this;
 	lineDirectionUnit.Normalize();
-	lineDirectionUnit.GetPlaneEquationValue()
+	//lineDirectionUnit.GetPlaneEquationValue()
+	float fMultiplyFactor = normal.GetDotProduct(passingPoint - *this);
+	fMultiplyFactor /= (lineDirectionUnit.GetDotProduct(normal));
+
+	Vector3D vIntersectVector = *this + lineDirectionUnit * fMultiplyFactor;
+
+	return vIntersectVector;
 }
 //Vector3D Vector3D::MultiplyMatrix(const Matrix4D& mat) const
 //{

@@ -35,6 +35,8 @@ public:
 	//Vector3D MakeProjection(const Matrix4D& mat) const;
 
 	void AddScreenOffset(const float offset);
+	float GetPlaneEquationValue(const Vector3D& normal, const Vector3D& passingPoint) const;
+	Vector3D GetIntersectPlaneVector(const Vector3D& normal, const Vector3D& passingPoint, const Vector3D& endPoint) const;
 
 
 	//Vector3D MultiplyMatrix(const Matrix4D& mat) const;
