@@ -1,11 +1,11 @@
 #include <fstream>
 #include <strstream>
 #include <cassert>
-#include <EASTL/vector_multimap.h>
 #include <EASTL/vector.h>
-#include <EASTL/map.h>
 #include <EASTL/sort.h>
 #include <EASTL/queue.h>
+#include <EASTL/list.h>
+#include <vector>
 
 #include "TehmarniEAStlHeader.h"
 #include "FunctionObject.h"
@@ -28,7 +28,7 @@ private:
 
 
 	Matrix4D MultiplyMatrix(const Matrix4D& op1, const Matrix4D& op2) const;
-	void MultiplyTriangle(Triangle& out, const Triangle& in, const Matrix4D& mat) const;
+	//void MultiplyTriangle(Triangle& out, const Triangle& in, const Matrix4D& mat) const;
 	void ProjectTriangle(Triangle* in, const Matrix4D& mat) const;
 
 	Matrix4D GetPointAtMatrix(const Vector3D& position, const Vector3D& target, const Vector3D& up);
@@ -39,9 +39,11 @@ private:
 	Matrix4D GetRotateMatrixZ(const float theta) const;
 	Matrix4D GetIdentityMatrix() const;
 	Matrix4D GetProjectionMatrix(float fNear, float fFar, float fFOV, int nScreenHeight, int nScreenWidth);
+	Matrix4D GetTranslationMatrix(const Vector3D& position);
 
 	size_t ClipTriangleAgainstPlane(const Vector3D& normal, const Vector3D& point, const Triangle* in, Triangle* out1, Triangle* out2);
-	//float GetPlaneEquationValue(const Vector3D& target, const Vector3D& normal, const Vector3D& point);
+	void ClipAgainstFaceAndProjectAndStore(Triangle* targetTriangle, const Matrix4D& mat, eastl::vector<Triangle*>& vectorTriangle);
+	eastl::list<Triangle*> ClipTrianglesAgaintCorners(const eastl::vector<Triangle*>& vectriangles);
 
 
 private:
@@ -59,10 +61,13 @@ private:
 
 	Matrix4D mMLeftRecRotate;
 	Matrix4D mMRightRecRotate;
+	Matrix4D mMProject;
 
 	eastl::queue<Triangle*> mTriangleMemoryPool;
 
 };
+
+#define TRIANGLE_VERTICE_NUMBER 3;
 
 CHAR_INFO GetColour(float lum)
 {
@@ -105,8 +110,9 @@ TaeDdangGraphicEngine::TaeDdangGraphicEngine()
 	, mvCamera()
 	, mfYCameraAxisRotate{ 0.0f }
 	, mvLookDirection{ 0.0f, 0.0f, 1.0f }
+	, mMProject{}
 {
-
+	
 }
 
 const float TaeDdangGraphicEngine::fPi = 3.141592f;
@@ -346,15 +352,6 @@ Matrix4D TaeDdangGraphicEngine::GetPointAtMatrix(const Vector3D& position, const
 
 Matrix4D TaeDdangGraphicEngine::GetInverseMatrix(const Matrix4D& mat)
 {
-	/*mat4x4 matrix;
-	matrix.m[0][0] = m.m[0][0]; matrix.m[0][1] = m.m[1][0]; matrix.m[0][2] = m.m[2][0]; matrix.m[0][3] = 0.0f;
-	matrix.m[1][0] = m.m[0][1]; matrix.m[1][1] = m.m[1][1]; matrix.m[1][2] = m.m[2][1]; matrix.m[1][3] = 0.0f;
-	matrix.m[2][0] = m.m[0][2]; matrix.m[2][1] = m.m[1][2]; matrix.m[2][2] = m.m[2][2]; matrix.m[2][3] = 0.0f;
-	matrix.m[3][0] = -(m.m[3][0] * matrix.m[0][0] + m.m[3][1] * matrix.m[1][0] + m.m[3][2] * matrix.m[2][0]);
-	matrix.m[3][1] = -(m.m[3][0] * matrix.m[0][1] + m.m[3][1] * matrix.m[1][1] + m.m[3][2] * matrix.m[2][1]);
-	matrix.m[3][2] = -(m.m[3][0] * matrix.m[0][2] + m.m[3][1] * matrix.m[1][2] + m.m[3][2] * matrix.m[2][2]);
-	matrix.m[3][3] = 1.0f;
-	return matrix;*/
 	Matrix4D matrix;
 	matrix.m[0][0] = mat.m[0][0];
 	matrix.m[1][0] = mat.m[0][1];
@@ -441,20 +438,27 @@ Matrix4D TaeDdangGraphicEngine::GetProjectionMatrix(float fNear, float fFar, flo
 	return projectionMatrix;
 }
 
+Matrix4D TaeDdangGraphicEngine::GetTranslationMatrix(const Vector3D& position)
+{
+	Matrix4D translationMatrix{};
+	translationMatrix.m[0][0] = 1.0f;
+	translationMatrix.m[1][1] = 1.0f;
+	translationMatrix.m[2][2] = 1.0f;
+	translationMatrix.m[3][3] = 1.0f;
+
+	translationMatrix.m[0][3] = position.mfX;
+	translationMatrix.m[1][3] = position.mfY;
+	translationMatrix.m[2][3] = position.mfZ;
+	return translationMatrix;
+}
+
 size_t TaeDdangGraphicEngine::ClipTriangleAgainstPlane(const Vector3D& normal, const Vector3D& passingPoint, const Triangle* targetTriangle, Triangle* newTri1, Triangle* newTri2)
 {
-	/*size_t nInPointNumber = 0;
-	size_t nOutPointNumber = 0;*/
-
-	/*float fPlaneEquationValue1 = in->Point[0].GetPlaneEquationValue(normal, point);
-	float fPlaneEquationValue2 = in->Point[1].GetPlaneEquationValue(normal, point);
-	float fPlaneEquationValue3 = in->Point[2].GetPlaneEquationValue(normal, point);*/
-
 	float fPlaneEquationValue[3]{};
 	fPlaneEquationValue[0] = targetTriangle->Point[0].GetPlaneEquationValue(normal, passingPoint);
 	fPlaneEquationValue[1] = targetTriangle->Point[1].GetPlaneEquationValue(normal, passingPoint);
 	fPlaneEquationValue[2] = targetTriangle->Point[2].GetPlaneEquationValue(normal, passingPoint);
-	//bool bOutPointIndex[3] = { false };
+	
 	size_t nOutPointIndex[3]{};
 	size_t nInPointIndex[3]{};
 	size_t nOutPointNumber{};
@@ -463,7 +467,6 @@ size_t TaeDdangGraphicEngine::ClipTriangleAgainstPlane(const Vector3D& normal, c
 	{
 		if (fPlaneEquationValue[i] < 0.0f)
 		{
-			//nOutPointNumber++;
 			nOutPointIndex[nOutPointNumber++] = i;
 		}
 		else
@@ -475,16 +478,15 @@ size_t TaeDdangGraphicEngine::ClipTriangleAgainstPlane(const Vector3D& normal, c
 
 	if (nOutPointNumber == 3) //  Do nothing when the entire triangle is out of the view 
 	{
-		return 3;
+		return 0;
 	}
 	else if (nOutPointNumber == 2)  // two vectors should be replaced by two intersecting vectors and it creates just one new triangle to rasterize
 	{
-
 		size_t nInIndex = nInPointIndex[nInPointNumber - 1];  // Unwrapping the information to debug comfortably
 		const Vector3D* InPoint = &targetTriangle->Point[nInIndex];
 		float checkPlaneEquationValue = InPoint->GetPlaneEquationValue(normal, passingPoint);  //to ensure there is no logical errors
-		assert(checkPlaneEquationValue > 0.0f);
-		size_t newTrianglePointIndex{ 1 };
+		assert(checkPlaneEquationValue >= 0.0f);
+		size_t newPointIndex{ 1 };
 		//newTri1->Point[0] = targetTriangle->Point[nPointIndex];
 		for (size_t i = 0; i < 3; i++)
 		{
@@ -496,10 +498,12 @@ size_t TaeDdangGraphicEngine::ClipTriangleAgainstPlane(const Vector3D& normal, c
 			{
 				//now Point[i] == outPoint => so you should get the intersect vector and put it in the new tiangle 
 				const Vector3D* vEndPointVector = &targetTriangle->Point[i];
-				newTri1->Point[newTrianglePointIndex++] = InPoint->GetIntersectPlaneVector(normal, passingPoint, *vEndPointVector);
+				newTri1->Point[newPointIndex++] = InPoint->GetIntersectPlaneVector(normal, passingPoint, *vEndPointVector);
 			}
 		}
-		return 2;
+		newTri1->color = targetTriangle->color;
+		newTri1->symbol = targetTriangle->symbol;
+		return 1;
 	}
 
 	else if (nOutPointNumber == 1)     //in this case, there should be two new triangles to replace the  clipped triangle
@@ -516,82 +520,193 @@ size_t TaeDdangGraphicEngine::ClipTriangleAgainstPlane(const Vector3D& normal, c
 		newTri1->Point[0] = *vInPoint[0];
 		newTri1->Point[1] = *vIntersectVectors[0];
 		newTri1->Point[2] = *vInPoint[1];
+		newTri1->symbol = targetTriangle->symbol;
+		newTri1->color = targetTriangle->color;
 
 		newTri2->Point[0] = *vInPoint[1];
 		newTri2->Point[1] = *vIntersectVectors[0];
 		newTri2->Point[2] = *vIntersectVectors[1];
+		newTri1->symbol = targetTriangle->symbol;
+		newTri1->color = targetTriangle->color;
 
-		return 1;
+
+		return 2;
 	}
 	else   // when nOutPointNumber == 0,  the entire triangle is in the view
 	{
-		return 0;
+		newTri1->Point[0] = targetTriangle->Point[0];
+		newTri1->Point[1] = targetTriangle->Point[1];
+		newTri1->Point[2] = targetTriangle->Point[2];
+		newTri1->symbol = targetTriangle->symbol;
+		newTri1->color = targetTriangle->color;
+		return 1;
 	}
 	
-	/*if (fPlaneEquationValue1 > 0.0f)
-	{
-		nInPointNumber++;
-	}
-	else
-	{
-		bOutPointIndex[0] = true;
-		nOutPointNumber++;
-	}
-	if (fPlaneEquationValue2 > 0.0f)
-	{
-		nInPointNumber++;
-	}
-	else
-	{
-		bOutPointIndex[1] = true;
-		nOutPointNumber++;
-	}
-	if (fPlaneEquationValue3 > 0.0f)
-	{
-		nInPointNumber++;
-	}
-	else
-	{
-		bOutPointIndex[2]= true;
-		nOutPointNumber++;
-	}*/
+}
 
-	//for (size_t i = 0; i < 3; i++)
-	//{
-	//	if (fPlaneEquationValue[i] > 0.0f)
-	//	{
-	//		bOutPointIndex[i] = true;
-	//		nInPointNumber++;
-	//	}
-	//}
+void TaeDdangGraphicEngine::ClipAgainstFaceAndProjectAndStore(Triangle* targetTriangle, const Matrix4D& viewMatrix, eastl::vector<Triangle*>& vectorTriangle)
+{
+	Triangle* pClippedTriangle[2]{};
+	for (size_t i = 0; i < 2; i++)
+	{
+		assert(!mTriangleMemoryPool.empty());
+		pClippedTriangle[i] = mTriangleMemoryPool.front();
+		mTriangleMemoryPool.pop();
+	}
 
-	//if (nInPointNumber == 3)
-	//{
-	//	return 3;
-	//}
-	//if (nInPointNumber == 0)
-	//{
-	//	return 0;
-	//}
+	size_t nClippedTriangleNumber = ClipTriangleAgainstPlane({ 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 0.01f }, targetTriangle, pClippedTriangle[0], pClippedTriangle[1]);
+	//mTriangleMemoryPool.push(targetTriangle);
+	for (size_t i = 0; i < nClippedTriangleNumber; i++)
+	{
+		Triangle*& projectedTriangle = pClippedTriangle[i];
+		projectedTriangle->Point[0] = pClippedTriangle[i]->Point[0].MultiplyMatrix(mMProject);
+		projectedTriangle->Point[1] = pClippedTriangle[i]->Point[1].MultiplyMatrix(mMProject);
+		projectedTriangle->Point[2] = pClippedTriangle[i]->Point[2].MultiplyMatrix(mMProject);
+		projectedTriangle->color = pClippedTriangle[i]->color;
+		projectedTriangle->symbol = pClippedTriangle[i]->symbol;
 
-	//if (nInPointNumber == 2)
-	//{
-	//	
-	//}
+		projectedTriangle->Point[0] /= projectedTriangle->Point[0].mfW;
+		projectedTriangle->Point[1] /= projectedTriangle->Point[1].mfW;
+		projectedTriangle->Point[2] /= projectedTriangle->Point[2].mfW;
 
-	//else // when nInPointNumber == 1
-	//{
-	//	return 1;
-	//}
+		projectedTriangle->Point[0].mfX *= -1.0f;
+		projectedTriangle->Point[0].mfY *= -1.0f;
 
+		projectedTriangle->Point[1].mfX *= -1.0f;
+		projectedTriangle->Point[1].mfY *= -1.0f;
+
+		projectedTriangle->Point[2].mfX *= -1.0f;
+		projectedTriangle->Point[2].mfY *= -1.0f;
+
+		Vector3D vOffset{ 1.0f, 1.0f, 0.0f };
+		projectedTriangle->Point[0] += vOffset;
+		projectedTriangle->Point[1] += vOffset;
+		projectedTriangle->Point[2] += vOffset;
+
+		const float fHalfScreenWidth = static_cast<float>(ScreenWidth() * 0.5);
+		const float fHalfScreenHeight = static_cast<float>(ScreenHeight() * 0.5);
+
+		projectedTriangle->Point[0].mfX *= fHalfScreenWidth;
+		projectedTriangle->Point[0].mfY *= fHalfScreenHeight;
+
+		projectedTriangle->Point[1].mfX *= fHalfScreenWidth;
+		projectedTriangle->Point[1].mfY *= fHalfScreenHeight;
+
+		projectedTriangle->Point[2].mfX *= fHalfScreenWidth;
+		projectedTriangle->Point[2].mfY *= fHalfScreenHeight;
+
+		vectorTriangle.push_back(projectedTriangle);
+	}
+	mTriangleMemoryPool.push(targetTriangle);
+
+	switch (nClippedTriangleNumber)
+	{
+	case 0:
+		mTriangleMemoryPool.push(pClippedTriangle[0]);
+		mTriangleMemoryPool.push(pClippedTriangle[1]);
+		break;
+	case 1:
+		mTriangleMemoryPool.push(pClippedTriangle[1]);
+		break;
+
+	case 2:
+		break;
+
+
+	default:
+		break;
+	}
+	return;
 }
 
 
-void TaeDdangGraphicEngine::MultiplyTriangle(Triangle& out, const Triangle& in, const Matrix4D& mat) const
+
+
+eastl::list<Triangle*> TaeDdangGraphicEngine::ClipTrianglesAgaintCorners(const eastl::vector<Triangle*>& trianglesToRasterize) 
 {
-	out.Point[0] = in.Point[0].MultiplyMatrix(mat);
-	out.Point[1] = in.Point[1].MultiplyMatrix(mat);
-	out.Point[2] = in.Point[2].MultiplyMatrix(mat);
+	eastl::list<Triangle*> listTriangles{};
+	Triangle* pClippedTriangle[2];
+	size_t triangleCount = trianglesToRasterize.size();
+	
+	for (const auto& triangleToDraw : trianglesToRasterize)
+	{
+		eastl::queue<Triangle*> queueTriangles{};
+		queueTriangles.push(triangleToDraw);
+		size_t nNewTriangles = 1;
+		for (size_t nAngleNumber = 0; nAngleNumber < 4; nAngleNumber++)
+		{
+			while (nNewTriangles > 0)
+			{
+				for (size_t i = 0; i < 2; i++)    // store memory for two potentially replacable triangles 
+				{
+					assert(!mTriangleMemoryPool.empty());
+					pClippedTriangle[i] = mTriangleMemoryPool.front();
+					mTriangleMemoryPool.pop();
+				}
+				nNewTriangles--;
+				Triangle* testTriangle = queueTriangles.front();
+				queueTriangles.pop();
+				size_t queueSize = queueTriangles.size();
+				//Triangle*& originalTriangle = testTriangle;
+				size_t nAddedTrianglesNumber{};
+
+				switch (nAngleNumber)
+				{
+				case 0:
+					nAddedTrianglesNumber = ClipTriangleAgainstPlane({ 1.0f,0.0f,0.0f }, { 0.0f, 0.0f, 0.0f }, testTriangle, pClippedTriangle[0], pClippedTriangle[1]);
+					break;
+
+				case 1:
+					nAddedTrianglesNumber = ClipTriangleAgainstPlane({ 0.0f, -1.0f, 0.0f }, { 0.0f, static_cast<float>(ScreenHeight()) - 1.0f ,0.0f }, testTriangle, pClippedTriangle[0], pClippedTriangle[1]);
+					break;
+
+				case 2:
+					nAddedTrianglesNumber = ClipTriangleAgainstPlane({-1.0f,0.0f,0.0f }, { static_cast<float>(ScreenWidth()) - 1.0f, 0.0f,0.0f }, testTriangle, pClippedTriangle[0], pClippedTriangle[1]);
+					break;
+
+				case 3:
+					nAddedTrianglesNumber = ClipTriangleAgainstPlane({ 0.0f, 1.0f,0.0f }, { 0.0f,0.0f ,0.0f }, testTriangle, pClippedTriangle[0], pClippedTriangle[1]);
+					break;
+
+				default:
+					break;
+				}
+				mTriangleMemoryPool.push(testTriangle);
+				if (nAddedTrianglesNumber == 0)	//dont need to rasterize this triangle
+				{
+					mTriangleMemoryPool.push(pClippedTriangle[0]);
+					mTriangleMemoryPool.push(pClippedTriangle[1]);
+				}
+				else if (nAddedTrianglesNumber == 1)
+				{
+					queueTriangles.push(pClippedTriangle[0]);  //A newly replaced  triangle to draw
+															  // It does not need to be drawn. so put it back in the memory pool
+					mTriangleMemoryPool.push(pClippedTriangle[1]);
+				}
+				else // (nNewTrianglesNumber == 2)
+				{
+					assert(nAddedTrianglesNumber == 2);
+					queueTriangles.push(pClippedTriangle[0]);   //newly replaced two triangles to draw
+					queueTriangles.push(pClippedTriangle[1]);
+				}
+			}
+			nNewTriangles = queueTriangles.size();
+				/*else
+				{
+					queueTriangles.push(pClippedTriangle[0]);
+					queueTriangles.push(pClippedTriangle[1]);
+					mTriangleMemoryPool.push(originalTriangle);
+				}*/
+
+		}
+		while (!queueTriangles.empty())
+		{
+			listTriangles.push_back(queueTriangles.front());
+			queueTriangles.pop();
+		}
+
+	}
+	return listTriangles;
 }
 
 void TaeDdangGraphicEngine::ProjectTriangle(Triangle* in, const Matrix4D& mat) const
@@ -613,14 +728,15 @@ inline bool TaeDdangGraphicEngine::OnUserCreate()
 
 	//initiateWithAssignment();
 	//initiateFromFile("VideoShip.obj");
-	initiateFromFile("axis.obj");
-	//initiateFromFile("mountains.obj");
+	//initiateFromFile("axis.obj");
+	initiateFromFile("mountains.obj");
 	//initiateFromFile("teapot.obj");
-	mvCamera.mfZ = -2.0f;
+	//mvCamera.mfZ = -2.0f;
 	//mfTheta = 3.14159f;
 	const float fPi = 3.141592f;
 	mMLeftRecRotate = GetRotateMatrixY(fPi / 2.0f);
 	mMRightRecRotate = GetRotateMatrixY(-fPi / 2.0f);
+	mMProject = GetProjectionMatrix(0.1f, 1000.0f, 3.14159f / 2.0f, ScreenHeight(), ScreenWidth());
 	//mMRightRecRotate = GetRotateMatrixX(-fPi / 2.0f);
 
 	return true;
@@ -639,11 +755,11 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 	//Vector3D unitVector
 	if (GetKey(VK_UP).bHeld)
 	{
-		mvCamera.mfY -= mfHorizantalMoveSpeed * fElapsedTime;
+		mvCamera.mfY += mfHorizantalMoveSpeed * fElapsedTime;
 	}
 	if (GetKey(VK_DOWN).bHeld)
 	{
-		mvCamera.mfY += mfHorizantalMoveSpeed * fElapsedTime;
+		mvCamera.mfY -= mfHorizantalMoveSpeed * fElapsedTime;
 	}
 	if (GetKey(VK_LEFT).bHeld)
 	{
@@ -672,23 +788,24 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 	}
 	if (GetKey(L'A').bHeld)
 	{
-		Vector3D vMoveDirection = vRotatedLookDirection.MultiplyMatrix(mMLeftRecRotate);
-		vMoveDirection.Normalize();
-		mvCamera += vMoveDirection * fElapsedTime * mfVerticalMoveSpeed;
-	}
-	if (GetKey(L'D').bHeld)
-	{
 		//mvCamera -= vRotatedLookDirection * fVerticalMoveSpeed * fElapsedTime;
 		Vector3D vMoveDirection = vRotatedLookDirection.MultiplyMatrix(mMRightRecRotate);
 		vMoveDirection.Normalize();
 		mvCamera += vMoveDirection * fElapsedTime * mfVerticalMoveSpeed;
 	}
+	if (GetKey(L'D').bHeld)
+	{
+		Vector3D vMoveDirection = vRotatedLookDirection.MultiplyMatrix(mMLeftRecRotate);
+		vMoveDirection.Normalize();
+		mvCamera += vMoveDirection * fElapsedTime * mfVerticalMoveSpeed;
+	}
+	
 
 
 
 	Fill(0, 0, ScreenWidth(), ScreenHeight(), PIXEL_SOLID, FG_BLACK);
 
-	eastl::vector<Triangle*> mapTrianlgesToRasterize{};
+	eastl::vector<Triangle*> vecProjectedTriangles{};
 
 	Vector3D vUp = { 0.0f, 1.0f, 0.0f };
 	Vector3D vTarget = mvCamera + vRotatedLookDirection;
@@ -696,31 +813,27 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 	assert(mvCamera.mfW == 1.0f);
 
 	Matrix4D cameraMatrix = GetPointAtMatrix(mvCamera, vTarget, vUp); //assert here!! Look what the problem is !!!
-	Matrix4D rotateY = GetRotateMatrixY(mfTheta);
 	Matrix4D viewMatrix = GetInverseMatrix(cameraMatrix);
+	Matrix4D rotateYMatrix = GetRotateMatrixY(mfTheta);
+	Matrix4D worldMatrix = GetTranslationMatrix({ 0.0f, 0.0f, 5.0f });
 
 	for (const auto& originalTriangle : mMesh.triangles)
 	{
-		//assert(!mTriangleMemoryPool.empty());
+		assert(!mTriangleMemoryPool.empty());
 		Triangle* translatedTriangle = mTriangleMemoryPool.front();
 		Triangle*& viewedTriangle = translatedTriangle;
 		mTriangleMemoryPool.pop();
 
-
-		MultiplyTriangle(*translatedTriangle, originalTriangle, rotateY);
-		//TranslateTriangle(*viewedTriangle, *translatedTriangle, viewMatrix);
-
-		/*translatedTriangle->Point[0].AddScreenOffset(mnScreenOffset);
-		translatedTriangle->Point[1].AddScreenOffset(mnScreenOffset);
-		translatedTriangle->Point[2].AddScreenOffset(mnScreenOffset);*/
+		translatedTriangle->Point[0] = originalTriangle.Point[0].MultiplyMatrix(worldMatrix);
+		translatedTriangle->Point[1] = originalTriangle.Point[1].MultiplyMatrix(worldMatrix);
+		translatedTriangle->Point[2] = originalTriangle.Point[2].MultiplyMatrix(worldMatrix);
 
 		Vector3D firstVectorOnPlane = translatedTriangle->Point[1] - translatedTriangle->Point[0];
 		Vector3D secondVectorOnPlane = translatedTriangle->Point[2] - translatedTriangle->Point[1];
 		Vector3D normalVector = firstVectorOnPlane.GetCrossProduct(secondVectorOnPlane);
 
 		float normalVectorSize = normalVector.GetSize();
-
-		if (normalVectorSize == 0.0f)
+		if (normalVectorSize == 0.0f) // if the normal vector is zero, it is mathematically wrong dont even bother to draw it
 		{
 			mTriangleMemoryPool.push(translatedTriangle);
 			continue;
@@ -729,20 +842,17 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 		{
 			normalVector.Normalize();
 		}
-		//Vector3D rayFromCameraToPlane = centroidVector - mvCamera;
-		//Vector3D rayFromCameraAtPlane = viewedTriangle->Point[0] - mvCamera;
-		//Vector3D centroidVector = (viewedTriangle->Point[0] + viewedTriangle->Point[1] + viewedTriangle->Point[2]) / 3.0f;
 
 		Vector3D rayFromCameraToPlane = translatedTriangle->Point[0] - mvCamera;
 		float rayAndNormalDotProduct = rayFromCameraToPlane.GetDotProduct(normalVector);
 
-		if (rayAndNormalDotProduct >= 0.0f) // the triangle can't be seen in this angle
+		if (rayAndNormalDotProduct >= 0.0f) // the triangle can't be seen in this angle, so let's move on to the next one
 		{
 			mTriangleMemoryPool.push(translatedTriangle);
+			continue;
 		}
-		else// (rayAndNormalDotProduct < 0.0f)
+		else
 		{
-			//Vector3D lightDirection = (/*mvCamera +*/ vRotatedLookDirection) * -1.0f;
 			Vector3D lightDirection = { 0.0f, 1.0f, -1.0f };
 			lightDirection.Normalize();
 
@@ -752,137 +862,67 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 			CHAR_INFO color = GetColour(lightAndNormalDotProduct);
 			translatedTriangle->color = color.Attributes;
 			translatedTriangle->symbol = color.Char.UnicodeChar;
+			translatedTriangle->Point[0] = translatedTriangle->Point[0].MultiplyMatrix(viewMatrix);
+			translatedTriangle->Point[1] = translatedTriangle->Point[1].MultiplyMatrix(viewMatrix);
+			translatedTriangle->Point[2] = translatedTriangle->Point[2].MultiplyMatrix(viewMatrix);
 
-			Triangle*& viewedTriangle = translatedTriangle;
-			viewedTriangle->Point[0] = translatedTriangle->Point[0].MultiplyMatrix(viewMatrix);
-			viewedTriangle->Point[1] = translatedTriangle->Point[1].MultiplyMatrix(viewMatrix);
-			viewedTriangle->Point[2] = translatedTriangle->Point[2].MultiplyMatrix(viewMatrix);
-
-			size_t nNumberOfClippedVector = 0;
-			Triangle* pClippedTriangle[2]{};
-			for (size_t i = 0; i < 2; i++)
-			{
-				assert(!mTriangleMemoryPool.empty());
-				pClippedTriangle[i] = mTriangleMemoryPool.front();
-				mTriangleMemoryPool.pop();
-			}
-
-			nNumberOfClippedVector = ClipTriangleAgainstPlane({ 0.0f,0.0f,1.0f }, { 0.0f,0.0f,0.01f }, translatedTriangle, pClippedTriangle[0], pClippedTriangle[1]);
-
-			if (nNumberOfClippedVector == 3) // no need to rasterize this one 
-			{
-				mTriangleMemoryPool.push(viewedTriangle);
-				mTriangleMemoryPool.push(pClippedTriangle[0]);
-				mTriangleMemoryPool.push(pClippedTriangle[1]);
-				continue;
-			}
-
-			switch (nNumberOfClippedVector)
-			{
-			case 2: //triangle should be replaced by one clipped triangle 
-				mTriangleMemoryPool.push(viewedTriangle);
-				mTriangleMemoryPool.push(pClippedTriangle[1]);
-				if (pClippedTriangle[0])
-				{
-					pClippedTriangle[0]->color = color.Attributes;
-					pClippedTriangle[0]->symbol = color.Char.UnicodeChar;
-				}
-				//viewedTriangle = nullptr;
-				pClippedTriangle[1] = nullptr;
-				//mTriangleMemoryPool.push(pClippedTriangle[1]); 
-				mapTrianlgesToRasterize.push_back(pClippedTriangle[0]);
-				pClippedTriangle[0] = nullptr;
-				break;
-
-			case 1: //triangle should be replaced by two clipped triangle
-				mTriangleMemoryPool.push(viewedTriangle);
-				if (pClippedTriangle[0])
-				{
-					pClippedTriangle[0]->color = color.Attributes;
-					pClippedTriangle[0]->symbol = color.Char.UnicodeChar;
-				}
-				if (pClippedTriangle[1])
-				{
-					pClippedTriangle[1]->color = color.Attributes;
-					pClippedTriangle[1]->symbol = color.Char.UnicodeChar;
-				}
-				viewedTriangle = nullptr;
-				mapTrianlgesToRasterize.push_back(pClippedTriangle[0]);
-				mapTrianlgesToRasterize.push_back(pClippedTriangle[1]);
-
-				pClippedTriangle[0] = nullptr;
-				pClippedTriangle[1] = nullptr;
-				break;
-
-
-			case 0: //The triangle is unclipped at all
-				mTriangleMemoryPool.push(pClippedTriangle[0]);
-				mTriangleMemoryPool.push(pClippedTriangle[1]);
-				pClippedTriangle[0] = nullptr;
-				pClippedTriangle[1] = nullptr;
-				mapTrianlgesToRasterize.push_back(viewedTriangle);
-				break;
-			default:
-				;//do nothing
-
-			}
-			//mapTrianlgesToRasterize.push_back(translatedTriangle);
+			ClipAgainstFaceAndProjectAndStore(translatedTriangle, viewMatrix, vecProjectedTriangles);
 		}
-
 	}
-	eastl::quick_sort(begin(mapTrianlgesToRasterize), end(mapTrianlgesToRasterize), CompareZCoordinate());
-	size_t trianglesCount = mapTrianlgesToRasterize.size();
-	for (size_t i = 0; i < trianglesCount; ++i)
+	
+	eastl::quick_sort(begin(vecProjectedTriangles), end(vecProjectedTriangles), CompareZCoordinate());
+	eastl::list<Triangle*> listTriangles = ClipTrianglesAgaintCorners(vecProjectedTriangles);
+	for (const auto& triangleToDraw : listTriangles)
 	{
-		Triangle* triangleToDraw = mapTrianlgesToRasterize[i];
-		Matrix4D projectMatrix = GetProjectionMatrix(0.1f, 1000.0f, 3.14159f / 2.0f, ScreenHeight(), ScreenWidth());
-		ProjectTriangle(triangleToDraw, projectMatrix);
+		const float fhalfScreenWidth = static_cast<float>(ScreenWidth());
+		const float fhalfScreenHeight = static_cast<float>(ScreenHeight());
+
+		int x1 = static_cast<int>(triangleToDraw->Point[0].mfX );
+		int y1 = static_cast<int>(triangleToDraw->Point[0].mfY );
+
+		int x2 = static_cast<int>(triangleToDraw->Point[1].mfX );
+		int y2 = static_cast<int>(triangleToDraw->Point[1].mfY );
+
+		int x3 = static_cast<int>(triangleToDraw->Point[2].mfX );
+		int y3 = static_cast<int>(triangleToDraw->Point[2].mfY );
+
+		FillTriangle(x1, y1,
+			x2, y2,
+			x3, y3,
+			triangleToDraw->symbol, triangleToDraw->color);
+	}
+	while (!listTriangles.empty())
+	{
+		mTriangleMemoryPool.push(listTriangles.front());
+		listTriangles.pop_front();
+	}
+
+	return true;
+
+}
 
 
-
-		triangleToDraw->Point[0].mfX += 1.0f;
-		triangleToDraw->Point[0].mfY += 1.0f;
-
-		triangleToDraw->Point[1].mfX += 1.0f;
-		triangleToDraw->Point[1].mfY += 1.0f;
-
-		triangleToDraw->Point[2].mfX += 1.0f;
-		triangleToDraw->Point[2].mfY += 1.0f;
-
-		const float fhalfScreenHeight = static_cast<float>(ScreenHeight() * 0.5f);
-		const float fhalfScreenWidth = static_cast<float>(ScreenWidth() * 0.5f);
-
-		/*const float fhalfScreenWidth = 1.0f;
-		const float fhalfScreenHeight = 1.0f;*/
-
-		/*const float fhalfScreenHeight = static_cast<float>(ScreenHeight() * 0.3f);
-		const float fhalfScreenWidth = static_cast<float>(ScreenWidth() * 0.3f);*/
-
-		int x1 = static_cast<int>(triangleToDraw->Point[0].mfX * fhalfScreenWidth);
+		/*int x1 = static_cast<int>(triangleToDraw->Point[0].mfX * fhalfScreenWidth);
 		int y1 = static_cast<int>(triangleToDraw->Point[0].mfY * fhalfScreenHeight);
 
 		int x2 = static_cast<int>(triangleToDraw->Point[1].mfX * fhalfScreenWidth);
 		int y2 = static_cast<int>(triangleToDraw->Point[1].mfY * fhalfScreenHeight);
 
 		int x3 = static_cast<int>(triangleToDraw->Point[2].mfX * fhalfScreenWidth);
-		int y3 = static_cast<int>(triangleToDraw->Point[2].mfY * fhalfScreenHeight);
+		int y3 = static_cast<int>(triangleToDraw->Point[2].mfY * fhalfScreenHeight);*/
 
-		Clip(x1, y1);
-		Clip(x2, y2);
-		Clip(x3, y3);
 
-		FillTriangle(x1, y1,
+		/*FillTriangle(x1, y1,
 			x2, y2,
 			x3, y3,
-			triangleToDraw->symbol, triangleToDraw->color);
+			triangleToDraw->symbol, triangleToDraw->color);*/
 
-	}
+	/*
 	for (const auto& pTriangle : mapTrianlgesToRasterize)
 	{
 		mTriangleMemoryPool.push(pTriangle);
-	}
-	return true;
-}
+	}*/
+
 
 bool TaeDdangGraphicEngine::OnUserDestroy()
 {

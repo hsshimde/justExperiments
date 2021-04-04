@@ -27,9 +27,12 @@ public:
 	Vector3D operator-(const Vector3D& rhs) const;
 	Vector3D operator*(float value) const;
 	Vector3D operator/(float value) const;
+	void operator*=(float value);
+	void operator/=(float value);
 
 	void operator+=(const Vector3D& rhs);
 	void operator-=(const Vector3D& rhs);
+	
 	Vector3D GetCrossProduct(const Vector3D& rhs) const;
 	float GetDotProduct(const Vector3D& rhs) const;
 	//Vector3D MakeProjection(const Matrix4D& mat) const;

@@ -111,6 +111,19 @@ Vector3D Vector3D::operator/(float value) const
 	result.mfZ /= value;
 	return result;
 }
+void Vector3D::operator*=(float value)
+{
+	mfX *= value;
+	mfY *= value;
+	mfZ *= value;
+	return;
+}
+void Vector3D::operator/=(float value)
+{
+	mfX /= value;
+	mfY /= value;
+	mfZ /= value;
+}
 void Vector3D::operator+=(const Vector3D& rhs)
 {
 	mfX += rhs.mfX;
@@ -145,11 +158,11 @@ void Vector3D::AddScreenOffset(const float offset)
 }
 float Vector3D::GetPlaneEquationValue(const Vector3D& normal, const Vector3D& passingPoint) const
 {
-	float value = 0.0f;
-	value += normal.mfX * (mfX - passingPoint.mfX);
-	value += normal.mfY * (mfY - passingPoint.mfY);
-	value += normal.mfZ * (mfZ - passingPoint.mfZ);
-	return value;
+	float fEquationValue = 0.0f;
+	fEquationValue += normal.mfX * (mfX - passingPoint.mfX);
+	fEquationValue += normal.mfY * (mfY - passingPoint.mfY);
+	fEquationValue += normal.mfZ * (mfZ - passingPoint.mfZ);
+	return fEquationValue;
 	//return 0.0f;
 }
 Vector3D Vector3D::GetIntersectPlaneVector(const Vector3D& normal, const Vector3D& passingPoint, const Vector3D& endPoint) const
