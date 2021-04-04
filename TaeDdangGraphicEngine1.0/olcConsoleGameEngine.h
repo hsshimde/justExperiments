@@ -812,7 +812,10 @@ public:
 	~olcConsoleGameEngine()
 	{
 		SetConsoleActiveScreenBuffer(m_hOriginalConsole);
-		delete[] m_bufScreen;
+		if (m_bufScreen)
+		{
+			delete[] m_bufScreen;
+		}
 	}
 
 public:
@@ -986,6 +989,7 @@ private:
 			{
 				// User has permitted destroy, so exit and clean up
 				delete[] m_bufScreen;
+				m_bufScreen = nullptr;
 				SetConsoleActiveScreenBuffer(m_hOriginalConsole);
 				m_cvGameFinished.notify_one();
 			}

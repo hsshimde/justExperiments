@@ -16,6 +16,7 @@ class TaeDdangGraphicEngine : public olcConsoleGameEngine
 {
 public:
 	TaeDdangGraphicEngine();
+	//~TaeDdangGraphicEngine();
 
 private:
 
@@ -50,7 +51,8 @@ private:
 	Mesh mMesh;
 	float mfTheta;
 	float mnScreenOffset;
-	float mfYCameraAxisRotate;
+	float mfYAxisCameraRotateAngle;
+	float mfXAxisCameraRotateAngle;
 	Vector3D mvCamera;
 	const Vector3D mvLookDirection;
 
@@ -67,7 +69,6 @@ private:
 
 };
 
-#define TRIANGLE_VERTICE_NUMBER 3;
 
 CHAR_INFO GetColour(float lum)
 {
@@ -93,8 +94,8 @@ CHAR_INFO GetColour(float lum)
 	case 11: bg_col = BG_GREY; fg_col = FG_WHITE; sym = PIXEL_THREEQUARTERS; break;
 	case 12: bg_col = BG_GREY; fg_col = FG_WHITE; sym = PIXEL_SOLID; break;
 	default:
-		//bg_col = BG_BLACK; fg_col = FG_BLACK; sym = PIXEL_SOLID; //This is the original code from olc engine
-		bg_col = BG_GREY; fg_col = FG_WHITE; sym = PIXEL_SOLID; //This is what I turned into 
+		bg_col = BG_BLACK; fg_col = FG_BLACK; sym = PIXEL_SOLID; //This is the original code from olc engine
+		//bg_col = BG_GREY; fg_col = FG_WHITE; sym = PIXEL_SOLID; //This is what I turned into 
 	}
 
 	CHAR_INFO c;
@@ -104,16 +105,26 @@ CHAR_INFO GetColour(float lum)
 }
 
 TaeDdangGraphicEngine::TaeDdangGraphicEngine()
-	: mMesh()
-	, mfTheta(0.0f)
-	, mnScreenOffset(0.0f)
-	, mvCamera()
-	, mfYCameraAxisRotate{ 0.0f }
+	: mMesh{ }
+	, mfTheta{ }
+	, mnScreenOffset{  }
+	, mvCamera{ }
+	, mfYAxisCameraRotateAngle{ }
+	, mfXAxisCameraRotateAngle{ }
 	, mvLookDirection{ 0.0f, 0.0f, 1.0f }
 	, mMProject{}
 {
 	
 }
+
+//TaeDdangGraphicEngine::~TaeDdangGraphicEngine()
+//{
+//	while (!mTriangleMemoryPool.empty())
+//	{
+//		delete mTriangleMemoryPool.front();
+//		mTriangleMemoryPool.pop();
+//	}
+//}
 
 const float TaeDdangGraphicEngine::fPi = 3.141592f;
 
@@ -139,6 +150,7 @@ bool TaeDdangGraphicEngine::initiateFromFile(const char* fileName)
 		break;
 	case 'm':
 		mnScreenOffset = -10.0f;
+		mvCamera.mfY = 20.0f;
 		break;
 	}
 
@@ -233,8 +245,8 @@ void TaeDdangGraphicEngine::initiateWithAssignment()
 		Triangle{Vector3D{fCubeSize, 0.0f, fCubeSize},  {  0.0f, 0.0f, 0.0f},   { fCubeSize, 0.0f, 0.0f} }
 
 	};
-
-	for (size_t i = 0; i < mMesh.triangles.size(); i++)
+	size_t poolSize = mMesh.triangles.size() * 2;
+	for (size_t i = 0; i < poolSize; i++)
 	{
 		mTriangleMemoryPool.push(new Triangle{});
 	}
@@ -554,9 +566,9 @@ void TaeDdangGraphicEngine::ClipAgainstFaceAndProjectAndStore(Triangle* targetTr
 		mTriangleMemoryPool.pop();
 	}
 
-	size_t nClippedTriangleNumber = ClipTriangleAgainstPlane({ 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 0.01f }, targetTriangle, pClippedTriangle[0], pClippedTriangle[1]);
+	size_t nClippedTriangleCount = ClipTriangleAgainstPlane({ 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 0.01f }, targetTriangle, pClippedTriangle[0], pClippedTriangle[1]);
 	//mTriangleMemoryPool.push(targetTriangle);
-	for (size_t i = 0; i < nClippedTriangleNumber; i++)
+	for (size_t i = 0; i < nClippedTriangleCount; i++)
 	{
 		Triangle*& projectedTriangle = pClippedTriangle[i];
 		projectedTriangle->Point[0] = pClippedTriangle[i]->Point[0].MultiplyMatrix(mMProject);
@@ -599,7 +611,7 @@ void TaeDdangGraphicEngine::ClipAgainstFaceAndProjectAndStore(Triangle* targetTr
 	}
 	mTriangleMemoryPool.push(targetTriangle);
 
-	switch (nClippedTriangleNumber)
+	switch (nClippedTriangleCount)
 	{
 	case 0:
 		mTriangleMemoryPool.push(pClippedTriangle[0]);
@@ -632,10 +644,10 @@ eastl::list<Triangle*> TaeDdangGraphicEngine::ClipTrianglesAgaintCorners(const e
 	{
 		eastl::queue<Triangle*> queueTriangles{};
 		queueTriangles.push(triangleToDraw);
-		size_t nNewTriangles = 1;
+		size_t nNewTrianglesCount = 1;
 		for (size_t nAngleNumber = 0; nAngleNumber < 4; nAngleNumber++)
 		{
-			while (nNewTriangles > 0)
+			while (nNewTrianglesCount > 0)
 			{
 				for (size_t i = 0; i < 2; i++)    // store memory for two potentially replacable triangles 
 				{
@@ -643,54 +655,54 @@ eastl::list<Triangle*> TaeDdangGraphicEngine::ClipTrianglesAgaintCorners(const e
 					pClippedTriangle[i] = mTriangleMemoryPool.front();
 					mTriangleMemoryPool.pop();
 				}
-				nNewTriangles--;
+				nNewTrianglesCount--;
 				Triangle* testTriangle = queueTriangles.front();
 				queueTriangles.pop();
 				size_t queueSize = queueTriangles.size();
 				//Triangle*& originalTriangle = testTriangle;
-				size_t nAddedTrianglesNumber{};
+				size_t nAddedTriangleCount{};
 
 				switch (nAngleNumber)
 				{
 				case 0:
-					nAddedTrianglesNumber = ClipTriangleAgainstPlane({ 1.0f,0.0f,0.0f }, { 0.0f, 0.0f, 0.0f }, testTriangle, pClippedTriangle[0], pClippedTriangle[1]);
+					nAddedTriangleCount = ClipTriangleAgainstPlane({ 1.0f,0.0f,0.0f }, { 0.0f, 0.0f, 0.0f }, testTriangle, pClippedTriangle[0], pClippedTriangle[1]);
 					break;
 
 				case 1:
-					nAddedTrianglesNumber = ClipTriangleAgainstPlane({ 0.0f, -1.0f, 0.0f }, { 0.0f, static_cast<float>(ScreenHeight()) - 1.0f ,0.0f }, testTriangle, pClippedTriangle[0], pClippedTriangle[1]);
+					nAddedTriangleCount = ClipTriangleAgainstPlane({ 0.0f, -1.0f, 0.0f }, { 0.0f, static_cast<float>(ScreenHeight()) - 1.0f ,0.0f }, testTriangle, pClippedTriangle[0], pClippedTriangle[1]);
 					break;
 
 				case 2:
-					nAddedTrianglesNumber = ClipTriangleAgainstPlane({-1.0f,0.0f,0.0f }, { static_cast<float>(ScreenWidth()) - 1.0f, 0.0f,0.0f }, testTriangle, pClippedTriangle[0], pClippedTriangle[1]);
+					nAddedTriangleCount = ClipTriangleAgainstPlane({-1.0f,0.0f,0.0f }, { static_cast<float>(ScreenWidth()) - 1.0f, 0.0f,0.0f }, testTriangle, pClippedTriangle[0], pClippedTriangle[1]);
 					break;
 
 				case 3:
-					nAddedTrianglesNumber = ClipTriangleAgainstPlane({ 0.0f, 1.0f,0.0f }, { 0.0f,0.0f ,0.0f }, testTriangle, pClippedTriangle[0], pClippedTriangle[1]);
+					nAddedTriangleCount = ClipTriangleAgainstPlane({ 0.0f, 1.0f,0.0f }, { 0.0f,0.0f ,0.0f }, testTriangle, pClippedTriangle[0], pClippedTriangle[1]);
 					break;
 
 				default:
 					break;
 				}
 				mTriangleMemoryPool.push(testTriangle);
-				if (nAddedTrianglesNumber == 0)	//dont need to rasterize this triangle
+				if (nAddedTriangleCount == 0)	//dont need to rasterize this triangle
 				{
 					mTriangleMemoryPool.push(pClippedTriangle[0]);
 					mTriangleMemoryPool.push(pClippedTriangle[1]);
 				}
-				else if (nAddedTrianglesNumber == 1)
+				else if (nAddedTriangleCount == 1)
 				{
 					queueTriangles.push(pClippedTriangle[0]);  //A newly replaced  triangle to draw
 															  // It does not need to be drawn. so put it back in the memory pool
 					mTriangleMemoryPool.push(pClippedTriangle[1]);
 				}
-				else // (nNewTrianglesNumber == 2)
+				else // (nNewTrianglesCount == 2)
 				{
-					assert(nAddedTrianglesNumber == 2);
+					assert(nAddedTriangleCount == 2);
 					queueTriangles.push(pClippedTriangle[0]);   //newly replaced two triangles to draw
 					queueTriangles.push(pClippedTriangle[1]);
 				}
 			}
-			nNewTriangles = queueTriangles.size();
+			nNewTrianglesCount = queueTriangles.size();
 				/*else
 				{
 					queueTriangles.push(pClippedTriangle[0]);
@@ -726,10 +738,10 @@ void TaeDdangGraphicEngine::ProjectTriangle(Triangle* in, const Matrix4D& mat) c
 inline bool TaeDdangGraphicEngine::OnUserCreate()
 {
 
-	//initiateWithAssignment();
+	initiateWithAssignment();
 	//initiateFromFile("VideoShip.obj");
 	//initiateFromFile("axis.obj");
-	initiateFromFile("mountains.obj");
+	//initiateFromFile("mountains.obj");
 	//initiateFromFile("teapot.obj");
 	//mvCamera.mfZ = -2.0f;
 	//mfTheta = 3.14159f;
@@ -749,33 +761,43 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 	static const float fPi = 3.141592f;
 	const float fAngularMoveSpeed = 2.0f * fPi / 3.0f;*/
 
-	Matrix4D MRotateForCameraLookDirection = GetRotateMatrixY(mfYCameraAxisRotate);
-	Vector3D vRotatedLookDirection = mvLookDirection.MultiplyMatrix(MRotateForCameraLookDirection);
+	Matrix4D MYAxisCameraRotate = GetRotateMatrixY(mfYAxisCameraRotateAngle);
+	Matrix4D MXAxisCameraRotate = GetRotateMatrixX(mfXAxisCameraRotateAngle);
+	Matrix4D MCameraRotate = GetIdentityMatrix();
+	MCameraRotate = MultiplyMatrix(MYAxisCameraRotate, MXAxisCameraRotate);
+	Vector3D vRotatedLookDirection = mvLookDirection.MultiplyMatrix(MCameraRotate);
+	//Vector3D vRotatedLookDirection = mvLookDirection.MultiplyMatrix(MYAxisCameraRotate);
 	//assert(vRotatedLookDirection.GetSize() == 1.0f);
 	//Vector3D unitVector
 	if (GetKey(VK_UP).bHeld)
 	{
-		mvCamera.mfY += mfHorizantalMoveSpeed * fElapsedTime;
+		//mvCamera.mfY += mfHorizantalMoveSpeed * fElapsedTime;
+		mfXAxisCameraRotateAngle -= mfAngularMoveSpeed * fElapsedTime;
+
 	}
 	if (GetKey(VK_DOWN).bHeld)
 	{
-		mvCamera.mfY -= mfHorizantalMoveSpeed * fElapsedTime;
+		//mvCamera.mfY -= mfHorizantalMoveSpeed * fElapsedTime;
+		mfXAxisCameraRotateAngle += mfAngularMoveSpeed * fElapsedTime;
 	}
 	if (GetKey(VK_LEFT).bHeld)
 	{
-		mvCamera.mfX -= mfVerticalMoveSpeed * fElapsedTime;
+		//mvCamera.mfX -= mfVerticalMoveSpeed * fElapsedTime;
+		mfYAxisCameraRotateAngle -= mfAngularMoveSpeed * fElapsedTime;
+
 	}
 	if (GetKey(VK_RIGHT).bHeld)
 	{
-		mvCamera.mfX += mfVerticalMoveSpeed * fElapsedTime;
-	}
+		//mvCamera.mfX += mfVerticalMoveSpeed * fElapsedTime;
+		mfYAxisCameraRotateAngle += mfAngularMoveSpeed * fElapsedTime;
+	}							
 	if (GetKey(L'J').bHeld)
 	{
-		mfYCameraAxisRotate -= mfAngularMoveSpeed * fElapsedTime;
+		//mfYAxisCameraRotateAngle -= mfAngularMoveSpeed * fElapsedTime;
 	}
 	if (GetKey(L'L').bHeld)
 	{
-		mfYCameraAxisRotate += mfAngularMoveSpeed * fElapsedTime;
+		//mfYAxisCameraRotateAngle += mfAngularMoveSpeed * fElapsedTime;
 	}
 
 	if (GetKey(L'W').bHeld)
@@ -798,6 +820,11 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 		Vector3D vMoveDirection = vRotatedLookDirection.MultiplyMatrix(mMLeftRecRotate);
 		vMoveDirection.Normalize();
 		mvCamera += vMoveDirection * fElapsedTime * mfVerticalMoveSpeed;
+	}
+
+	if (GetKey(L'Q').bReleased)
+	{
+		return false;
 	}
 	
 
