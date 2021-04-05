@@ -12,8 +12,8 @@ public:
 class CompareZCoordinate
 {
 public:
-	bool operator()(const Triangle* tri1, const Triangle* tri2) const
+	bool operator()(const Triangle& tri1, const Triangle& tri2) const
 	{
-		return (tri1->Point[0].mfZ + tri1->Point[1].mfZ + tri1->Point[2].mfZ > tri2->Point[0].mfZ + tri2->Point[1].mfZ + tri2->Point[2].mfZ);
+		return (tri1.Point[0].mfZ + tri1.Point[1].mfZ + tri1.Point[2].mfZ > tri2.Point[0].mfZ + tri2.Point[1].mfZ + tri2.Point[2].mfZ);
 	}
 };
