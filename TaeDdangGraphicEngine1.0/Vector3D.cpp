@@ -208,3 +208,5 @@ Vector3D Vector3D::GetIntersectPlaneVector(const Vector3D& normal, const Vector3
 //	return Vector3D{ vectorElement[0], vectorElement[1], 1.0f };
 //
 //}
+
+//Lets see whats going on here
