@@ -556,13 +556,13 @@ size_t TaeDdangGraphicEngine::ClipTriangleAgainstPlane(const Vector3D& normal, c
 	
 }
 
-void TaeDdangGraphicEngine::ClipAgainstFaceAndProjectAndStore(Triangle* targetTriangle, const Matrix4D& viewMatrix, eastl::vector<Triangle*>& vectorTriangle)
+void TaeDdangGraphicEngine::ClipAgainstFaceAndProjectAndStore(Triangle targetTriangle, const Matrix4D& viewMatrix, eastl::vector<Triangle>& vectorTriangle)
 {
-	Triangle* pClippedTriangle[2]{};
+	Triangle pClippedTriangle[2]{};
 	for (size_t i = 0; i < 2; i++)
 	{
 		assert(!mTriangleMemoryPool.empty());
-		pClippedTriangle[i] = mTriangleMemoryPool.front();
+		pClippedTriangle[i] = *mTriangleMemoryPool.front();
 		mTriangleMemoryPool.pop();
 	}
 
@@ -570,42 +570,36 @@ void TaeDdangGraphicEngine::ClipAgainstFaceAndProjectAndStore(Triangle* targetTr
 	//mTriangleMemoryPool.push(targetTriangle);
 	for (size_t i = 0; i < nClippedTriangleCount; i++)
 	{
-		Triangle*& projectedTriangle = pClippedTriangle[i];
-		projectedTriangle->Point[0] = pClippedTriangle[i]->Point[0].MultiplyMatrix(mMProject);
-		projectedTriangle->Point[1] = pClippedTriangle[i]->Point[1].MultiplyMatrix(mMProject);
-		projectedTriangle->Point[2] = pClippedTriangle[i]->Point[2].MultiplyMatrix(mMProject);
-		projectedTriangle->color = pClippedTriangle[i]->color;
-		projectedTriangle->symbol = pClippedTriangle[i]->symbol;
-
-		projectedTriangle->Point[0] /= projectedTriangle->Point[0].mfW;
-		projectedTriangle->Point[1] /= projectedTriangle->Point[1].mfW;
-		projectedTriangle->Point[2] /= projectedTriangle->Point[2].mfW;
-
-		projectedTriangle->Point[0].mfX *= -1.0f;
-		projectedTriangle->Point[0].mfY *= -1.0f;
-
-		projectedTriangle->Point[1].mfX *= -1.0f;
-		projectedTriangle->Point[1].mfY *= -1.0f;
-
-		projectedTriangle->Point[2].mfX *= -1.0f;
-		projectedTriangle->Point[2].mfY *= -1.0f;
+		Triangle& projectedTriangle = pClippedTriangle[i];
+		projectedTriangle.Point[0] = pClippedTriangle[i].Point[0].MultiplyMatrix(mMProject);
+		projectedTriangle.Point[1] = pClippedTriangle[i].Point[1].MultiplyMatrix(mMProject);
+		projectedTriangle.Point[2] = pClippedTriangle[i].Point[2].MultiplyMatrix(mMProject);
+		projectedTriangle.color =    pClippedTriangle[i].color;
+		projectedTriangle.symbol =   pClippedTriangle[i].symbol;
 
 		Vector3D vOffset{ 1.0f, 1.0f, 0.0f };
-		projectedTriangle->Point[0] += vOffset;
-		projectedTriangle->Point[1] += vOffset;
-		projectedTriangle->Point[2] += vOffset;
+		projectedTriangle.Point[0] /= projectedTriangle.Point[0].mfW;
+		projectedTriangle.Point[1] /= projectedTriangle.Point[1].mfW;
+		projectedTriangle.Point[2] /= projectedTriangle.Point[2].mfW;
+		projectedTriangle.Point[0].mfX *= -1.0f;
+		projectedTriangle.Point[0].mfY *= -1.0f;
+		projectedTriangle.Point[1].mfX *= -1.0f;
+		projectedTriangle.Point[1].mfY *= -1.0f;
+		projectedTriangle.Point[2].mfX *= -1.0f;
+		projectedTriangle.Point[2].mfY *= -1.0f;
+		projectedTriangle.Point[0] += vOffset;
+		projectedTriangle.Point[1] += vOffset;
+		projectedTriangle.Point[2] += vOffset;
 
 		const float fHalfScreenWidth = static_cast<float>(ScreenWidth() * 0.5);
 		const float fHalfScreenHeight = static_cast<float>(ScreenHeight() * 0.5);
 
-		projectedTriangle->Point[0].mfX *= fHalfScreenWidth;
-		projectedTriangle->Point[0].mfY *= fHalfScreenHeight;
-
-		projectedTriangle->Point[1].mfX *= fHalfScreenWidth;
-		projectedTriangle->Point[1].mfY *= fHalfScreenHeight;
-
-		projectedTriangle->Point[2].mfX *= fHalfScreenWidth;
-		projectedTriangle->Point[2].mfY *= fHalfScreenHeight;
+		projectedTriangle.Point[0].mfX *= fHalfScreenWidth;
+		projectedTriangle.Point[0].mfY *= fHalfScreenHeight;
+		projectedTriangle.Point[1].mfX *= fHalfScreenWidth;
+		projectedTriangle.Point[1].mfY *= fHalfScreenHeight;
+		projectedTriangle.Point[2].mfX *= fHalfScreenWidth;
+		projectedTriangle.Point[2].mfY *= fHalfScreenHeight;
 
 		vectorTriangle.push_back(projectedTriangle);
 	}
@@ -634,7 +628,7 @@ void TaeDdangGraphicEngine::ClipAgainstFaceAndProjectAndStore(Triangle* targetTr
 
 
 
-eastl::list<Triangle*> TaeDdangGraphicEngine::ClipTrianglesAgaintCorners(const eastl::vector<Triangle*>& trianglesToRasterize) 
+eastl::list<Triangle*> TaeDdangGraphicEngine::ClipTrianglesAgaintCorners(const eastl::vector<Triangle>& trianglesToRasterize) 
 {
 	eastl::list<Triangle*> listTriangles{};
 	Triangle* pClippedTriangle[2];
