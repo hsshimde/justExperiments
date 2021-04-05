@@ -42,9 +42,9 @@ private:
 	Matrix4D GetProjectionMatrix(float fNear, float fFar, float fFOV, int nScreenHeight, int nScreenWidth);
 	Matrix4D GetTranslationMatrix(const Vector3D& position);
 
-	size_t ClipTriangleAgainstPlane(const Vector3D& normal, const Vector3D& point, const Triangle* in, Triangle* out1, Triangle* out2);
-	void ClipAgainstFaceAndProjectAndStore(Triangle* targetTriangle, const Matrix4D& mat, eastl::vector<Triangle*>& vectorTriangle);
-	eastl::list<Triangle*> ClipTrianglesAgaintCorners(const eastl::vector<Triangle*>& vectriangles);
+	size_t ClipTriangleAgainstPlane(const Vector3D& normal, const Vector3D& point, const Triangle in, Triangle out1, Triangle out2);
+	void ClipAgainstFaceAndProjectAndStore(Triangle& targetTriangle, const Matrix4D& mat, eastl::vector<Triangle>& vectorTriangle);
+	eastl::list<Triangle> ClipTrianglesAgaintCorners(const eastl::vector<Triangle>& vectriangles);
 
 
 private:
@@ -738,10 +738,10 @@ void TaeDdangGraphicEngine::ProjectTriangle(Triangle* in, const Matrix4D& mat) c
 inline bool TaeDdangGraphicEngine::OnUserCreate()
 {
 
-	initiateWithAssignment();
+	//initiateWithAssignment();
 	//initiateFromFile("VideoShip.obj");
 	//initiateFromFile("axis.obj");
-	//initiateFromFile("mountains.obj");
+	initiateFromFile("mountains.obj");
 	//initiateFromFile("teapot.obj");
 	//mvCamera.mfZ = -2.0f;
 	//mfTheta = 3.14159f;
@@ -832,7 +832,7 @@ bool TaeDdangGraphicEngine::OnUserUpdate(float fElapsedTime)
 
 	Fill(0, 0, ScreenWidth(), ScreenHeight(), PIXEL_SOLID, FG_BLACK);
 
-	eastl::vector<Triangle*> vecProjectedTriangles{};
+	eastl::vector<Triangle> vecProjectedTriangles{};
 
 	Vector3D vUp = { 0.0f, 1.0f, 0.0f };
 	Vector3D vTarget = mvCamera + vRotatedLookDirection;
